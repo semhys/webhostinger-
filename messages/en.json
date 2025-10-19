@@ -1,0 +1,37 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About Us",
+    "store": "Store",
+    "academy": "Academy", 
+    "blog": "Insights",
+    "solutions": "Solutions",
+    "contact": "Contact"
+  },
+  "HomePage": {
+    "hero": {
+      "title": "Engineering Excellence Redefined",
+      "subtitle": "Advanced solutions for high-performance engineering challenges",
+      "cta": "Discover Our Solutions",
+      "cta_secondary": "Learn More"
+    },
+    "company": {
+      "tagline": "Innovation engineered",
+      "description": "Leading the future of engineering with cutting-edge technology and world-class expertise."
+    },
+    "services": {
+      "title": "Our Solutions",
+      "subtitle": "Comprehensive engineering solutions for global challenges"
+    }
+  },
+  "Common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "es": "Español", 
+      "pt": "Português"
+    }
+  }
+}

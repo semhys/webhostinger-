@@ -1,0 +1,37 @@
+{
+  "Navigation": {
+    "home": "Inicio",
+    "about": "Nosotros",
+    "store": "Tienda", 
+    "academy": "Academia",
+    "blog": "Perspectivas",
+    "solutions": "Soluciones",
+    "contact": "Contacto"
+  },
+  "HomePage": {
+    "hero": {
+      "title": "Excelencia en Ingeniería Redefinida",
+      "subtitle": "Soluciones avanzadas para desafíos de ingeniería de alto rendimiento",
+      "cta": "Descubre Nuestras Soluciones",
+      "cta_secondary": "Saber Más"
+    },
+    "company": {
+      "tagline": "Innovación diseñada",
+      "description": "Liderando el futuro de la ingeniería con tecnología de vanguardia y experiencia de clase mundial."
+    },
+    "services": {
+      "title": "Nuestras Soluciones",
+      "subtitle": "Soluciones integrales de ingeniería para desafíos globales"
+    }
+  },
+  "Common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "language": "Idioma",
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "pt": "Português"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "Navigation": {
+    "home": "Início",
+    "about": "Sobre Nós",
+    "store": "Loja",
+    "academy": "Academia",
+    "blog": "Perspectivas", 
+    "solutions": "Soluções",
+    "contact": "Contato"
+  },
+  "HomePage": {
+    "hero": {
+      "title": "Excelência em Engenharia Redefinida",
+      "subtitle": "Soluções avançadas para desafios de engenharia de alta performance",
+      "cta": "Descubra Nossas Soluções",
+      "cta_secondary": "Saiba Mais"
+    },
+    "company": {
+      "tagline": "Inovação projetada",
+      "description": "Liderando o futuro da engenharia com tecnologia de ponta e expertise de classe mundial."
+    },
+    "services": {
+      "title": "Nossas Soluções",
+      "subtitle": "Soluções abrangentes de engenharia para desafios globais"
+    }
+  },
+  "Common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro",
+    "language": "Idioma",
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "pt": "Português"
+    }
+  }
+}

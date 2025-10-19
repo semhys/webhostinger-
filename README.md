@@ -1,4 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SEMHYS - Engineering Excellence
+
+🚀 **Website oficial de SEMHYS** - Soluciones avanzadas de ingeniería de alta performance
+
+## 🌍 **Multi-idioma**
+- 🇺🇸 **English** (Principal)
+- 🇪🇸 **Español** 
+- 🇧🇷 **Português**
+
+## 🛠️ **Tecnologías**
+- **Next.js 15** - Framework React con Turbopack
+- **TypeScript** - Tipado estático
+- **Tailwind CSS** - Diseño responsive
+- **GitHub Actions** - CI/CD automático
+
+---
+
+**Proyecto Next.js** bootstrapped con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
