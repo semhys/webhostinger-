@@ -11,8 +11,11 @@
     "deploy": "npm run build && npm run export"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^9.1.1",
     "next": "15.5.6",
     "next-intl": "^4.3.12",
+    "node-fetch": "^3.3.2",
+    "openai": "^6.5.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },

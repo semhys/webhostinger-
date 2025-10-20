@@ -1,0 +1,275 @@
+{
+  "name": "SEMHYS Chat Agent - Clasificador Inteligente",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "semhys-chat",
+        "options": {}
+      },
+      "id": "webhook-chat",
+      "name": "Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "semhys-chat-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.category}}",
+              "operation": "equal",
+              "value2": "technical"
+            }
+          ]
+        }
+      },
+      "id": "clasificador",
+      "name": "Clasificador Consultas",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "response_type",
+              "value": "technical_consultation"
+            },
+            {
+              "name": "department",
+              "value": "engineering"
+            },
+            {
+              "name": "escalation_level", 
+              "value": "={{$json.priority === 'high' ? 'urgent' : 'standard'}}"
+            },
+            {
+              "name": "expertise_required",
+              "value": "={{$json.message.toLowerCase().includes('bomba') ? 'hydraulic_systems' : $json.message.toLowerCase().includes('motor') ? 'electrical_systems' : $json.message.toLowerCase().includes('automatización') ? 'automation_control' : 'general_engineering'}}"
+            },
+            {
+              "name": "response_message",
+              "value": "Consulta técnica especializada recibida. Nuestro equipo de ingeniería {{$json.expertise_required}} revisará su solicitud y le proporcionará una respuesta detallada en las próximas 2-4 horas. Su número de ticket es: #TECH-{{$json.sessionId}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "technical-processing",
+      "name": "Procesamiento Técnico",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [680, 200]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "response_type",
+              "value": "general_consultation"
+            },
+            {
+              "name": "department", 
+              "value": "customer_service"
+            },
+            {
+              "name": "response_message",
+              "value": "{{$json.message.toLowerCase().includes('precio') || $json.message.toLowerCase().includes('cotización') ? 'Gracias por su interés en SEMHYS. Un especialista en ventas se comunicará con usted en las próximas 24 horas para proporcionarle una cotización personalizada.' : $json.message.toLowerCase().includes('servicio') ? 'SEMHYS ofrece soluciones integrales de ingeniería industrial, automatización y consultoría técnica. ¿En qué área específica podemos asistirle?' : 'Gracias por contactar a SEMHYS. Hemos recibido su consulta y le responderemos a la brevedad. Para consultas urgentes, puede llamar al +57 300 123 4567.'}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "general-processing",
+      "name": "Procesamiento General",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [680, 400]
+    },
+    {
+      "parameters": {
+        "authentication": "generic",
+        "genericAuthType": "httpBasicAuth",
+        "url": "smtp.hostinger.com",
+        "sendTo": "engineering@semhys.com, contact@semhys.com",
+        "subject": "🔧 CONSULTA TÉCNICA URGENTE - SEMHYS Chat",
+        "message": "=NUEVA CONSULTA TÉCNICA RECIBIDA\n\n📋 DETALLES:\n• Mensaje: {{$json.message}}\n• Categoría: {{$json.category}}\n• Prioridad: {{$json.priority}}\n• Confianza: {{$json.confidence}}\n• Especialidad: {{$json.expertise_required}}\n• Idioma: {{$json.language}}\n• Sesión: {{$json.sessionId}}\n• Timestamp: {{$json.timestamp}}\n\n⚡ ACCIÓN REQUERIDA:\nEsta consulta requiere atención del equipo de {{$json.expertise_required}}.\n\n🎯 RESPUESTA SUGERIDA:\n{{$json.response_message}}\n\n---\nSEMHYS AI Agent v2.0",
+        "options": {
+          "ccEmail": "",
+          "bccEmail": "",
+          "appendAttribution": false
+        }
+      },
+      "id": "email-technical",
+      "name": "Email Técnico",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [900, 200],
+      "credentials": {
+        "smtp": {
+          "id": "semhys-smtp",
+          "name": "SEMHYS SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "generic", 
+        "genericAuthType": "httpBasicAuth",
+        "url": "smtp.hostinger.com",
+        "sendTo": "contact@semhys.com",
+        "subject": "💬 Nueva Consulta General - SEMHYS Chat",
+        "message": "=NUEVA CONSULTA GENERAL RECIBIDA\n\n📋 DETALLES:\n• Mensaje: {{$json.message}}\n• Tipo: {{$json.response_type}}\n• Prioridad: {{$json.priority}}\n• Idioma: {{$json.language}}\n• Sesión: {{$json.sessionId}}\n• Timestamp: {{$json.timestamp}}\n\n💬 RESPUESTA ENVIADA:\n{{$json.response_message}}\n\n---\nSEMHYS AI Agent v2.0",
+        "options": {
+          "ccEmail": "",
+          "bccEmail": "",
+          "appendAttribution": false
+        }
+      },
+      "id": "email-general",
+      "name": "Email General",
+      "type": "n8n-nodes-base.emailSend", 
+      "typeVersion": 2,
+      "position": [900, 400],
+      "credentials": {
+        "smtp": {
+          "id": "semhys-smtp",
+          "name": "SEMHYS SMTP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"success\": true, \"customResponse\": \"{{$json.response_message}}\", \"category\": \"{{$json.category}}\", \"department\": \"{{$json.department}}\", \"ticket\": \"#TECH-{{$json.sessionId}}\"}",
+        "options": {}
+      },
+      "id": "response-technical",
+      "name": "Respuesta Técnica",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"success\": true, \"customResponse\": \"{{$json.response_message}}\", \"category\": \"{{$json.category}}\", \"department\": \"{{$json.department}}\"}",
+        "options": {}
+      },
+      "id": "response-general",
+      "name": "Respuesta General", 
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "log_entry",
+              "value": "={{$now.toISO()}} - [{{$json.category.toUpperCase()}}] {{$json.message.substring(0,50)}}... | Session: {{$json.sessionId}} | Priority: {{$json.priority}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "analytics-logger",
+      "name": "Analytics Logger",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [460, 500]
+    }
+  ],
+  "connections": {
+    "Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Clasificador Consultas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analytics Logger",
+            "type": "main", 
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clasificador Consultas": {
+      "main": [
+        [
+          {
+            "node": "Procesamiento Técnico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Procesamiento General", 
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesamiento Técnico": {
+      "main": [
+        [
+          {
+            "node": "Email Técnico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesamiento General": {
+      "main": [
+        [
+          {
+            "node": "Email General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Técnico": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Técnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email General": {
+      "main": [
+        [
+          {
+            "node": "Respuesta General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "America/Bogota"
+  },
+  "versionId": "1.0"
+}

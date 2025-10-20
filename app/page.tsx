@@ -186,23 +186,11 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <div className="mr-3 w-12 h-12 rounded-full relative shadow-lg overflow-hidden">
-                {/* Segmentos de colores como en el logo original */}
-                <div className="absolute inset-0 bg-orange-500"></div>
-                <div className="absolute inset-0 bg-gradient-to-tl from-teal-500 via-teal-500/80 to-transparent"></div>
-                <div className="absolute top-0 right-0 w-6 h-6 bg-emerald-500 rounded-bl-full"></div>
-                
-                {/* Círculo blanco interior */}
-                <div className="absolute inset-2 rounded-full bg-white flex items-center justify-center">
-                  {/* El número 3 bold y grande */}
-                  <span className="text-orange-600 font-black text-lg leading-none" style={{ fontFamily: 'Arial Black, sans-serif' }}>3</span>
-                </div>
-                
-                {/* Texto SEMHYS en curva inferior */}
-                <div className="absolute bottom-0 inset-x-0 h-3 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold tracking-wider">SEMHYS</span>
-                </div>
-              </div>
+              <img 
+                src="/logo-semhys.png" 
+                alt="SEMHYS Logo" 
+                className="mr-3 w-12 h-12 rounded-full shadow-lg bg-white p-0.5"
+              />
               <h1 className="text-2xl font-bold">SEMHYS</h1>
             </div>
 
@@ -214,7 +202,7 @@ export default function HomePage() {
               <a href="#academy" className="hover:text-blue-300 transition-colors">{t.nav.academy}</a>
               <a href="#blog" className="hover:text-blue-300 transition-colors">{t.nav.blog}</a>
               <a href="#solutions" className="hover:text-blue-300 transition-colors">{t.nav.solutions}</a>
-              <a href="#contact" className="hover:text-blue-300 transition-colors">{t.nav.contact}</a>
+              <a href="/contact" className="hover:text-blue-300 transition-colors">{t.nav.contact}</a>
             </div>
 
             {/* Language Selector */}
@@ -404,6 +392,40 @@ export default function HomePage() {
                 <p className="text-gray-600">International engineering solutions with sustainable and scalable results</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-orange-500 via-teal-600 to-emerald-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-6">
+            {currentLang === 'en' && 'Ready to Start Your Project?'}
+            {currentLang === 'es' && '¿Listo para Comenzar tu Proyecto?'}
+            {currentLang === 'pt' && 'Pronto para Iniciar seu Projeto?'}
+          </h2>
+          <p className="text-xl text-orange-100 mb-8 max-w-3xl mx-auto">
+            {currentLang === 'en' && 'Let\'s discuss how SEMHYS can transform your engineering challenges into innovative solutions. Contact our expert team today.'}
+            {currentLang === 'es' && 'Hablemos sobre cómo SEMHYS puede transformar tus desafíos de ingeniería en soluciones innovadoras. Contacta a nuestro equipo experto hoy.'}
+            {currentLang === 'pt' && 'Vamos discutir como a SEMHYS pode transformar seus desafios de engenharia em soluções inovadoras. Entre em contato com nossa equipe especializada hoje.'}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a 
+              href="/contact" 
+              className="bg-white text-orange-600 font-bold py-4 px-8 rounded-lg hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-lg"
+            >
+              {currentLang === 'en' && '🚀 Get Started Now'}
+              {currentLang === 'es' && '🚀 Comenzar Ahora'}
+              {currentLang === 'pt' && '🚀 Começar Agora'}
+            </a>
+            <a 
+              href="mailto:contact@semhys.com" 
+              className="border-2 border-white text-white font-bold py-4 px-8 rounded-lg hover:bg-white hover:text-orange-600 transition-all duration-200 transform hover:scale-105"
+            >
+              {currentLang === 'en' && '📧 Email Us'}
+              {currentLang === 'es' && '📧 Contáctanos'}
+              {currentLang === 'pt' && '📧 Envie-nos Email'}
+            </a>
           </div>
         </div>
       </section>

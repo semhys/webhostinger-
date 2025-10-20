@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "instanceId": "semhys-chat-agent"
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "semhys-chat",
+        "responseMode": "responseNode"
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "webhook-chat-receiver",
+      "name": "Chat Webhook",
+      "webhookId": "semhys-chat-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.category}}",
+              "operation": "equal",
+              "value2": "technical"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "id": "category-classifier",
+      "name": "¿Es Consulta Técnica?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.priority}}",
+              "operation": "equal",
+              "value2": "high"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 180],
+      "id": "priority-check",
+      "name": "¿Es Urgente?"
+    },
+    {
+      "parameters": {
+        "authentication": "generic",
+        "generic": {
+          "auth": {
+            "username": "contact@semhys.com",
+            "password": "Q@bola400"
+          }
+        },
+        "fromEmail": "contact@semhys.com",
+        "toEmail": "contact@semhys.com",
+        "subject": "🚨 CONSULTA TÉCNICA URGENTE - SEMHYS Chat",
+        "text": "=CONSULTA TÉCNICA URGENTE\n\n👤 Sesión: {{$json.sessionId}}\n🕒 Hora: {{$json.timestamp}}\n📱 Idioma: {{$json.language}}\n🔥 Prioridad: {{$json.priority}}\n\n💬 MENSAJE:\n{{$json.message}}\n\n🤖 Clasificación IA:\n- Categoría: {{$json.category}}\n- Confianza: {{Math.round($json.confidence * 100)}}%\n\n⚡ Esta consulta requiere atención técnica especializada inmediata.",
+        "options": {
+          "allowUnauthorizedCerts": false
+        },
+        "transporterOptions": {
+          "host": "smtp.hostinger.com",
+          "port": 587,
+          "secure": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [900, 100],
+      "id": "urgent-email-alert",
+      "name": "Alerta Email Urgente"
+    },
+    {
+      "parameters": {
+        "authentication": "generic",
+        "generic": {
+          "auth": {
+            "username": "contact@semhys.com",
+            "password": "Q@bola400"
+          }
+        },
+        "fromEmail": "contact@semhys.com",
+        "toEmail": "contact@semhys.com",
+        "subject": "🔧 Nueva Consulta Técnica - SEMHYS Chat",
+        "text": "=NUEVA CONSULTA TÉCNICA\n\n👤 Sesión: {{$json.sessionId}}\n🕒 Hora: {{$json.timestamp}}\n📱 Idioma: {{$json.language}}\n⚡ Prioridad: {{$json.priority}}\n\n💬 MENSAJE:\n{{$json.message}}\n\n🤖 Análisis IA:\n- Categoría: Técnica\n- Confianza: {{Math.round($json.confidence * 100)}}%\n\n🔧 Se requiere respuesta de equipo de ingeniería.",
+        "options": {
+          "allowUnauthorizedCerts": false
+        },
+        "transporterOptions": {
+          "host": "smtp.hostinger.com",
+          "port": 587,
+          "secure": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [900, 260],
+      "id": "technical-email",
+      "name": "Email Consulta Técnica"
+    },
+    {
+      "parameters": {
+        "authentication": "generic",
+        "generic": {
+          "auth": {
+            "username": "contact@semhys.com",
+            "password": "Q@bola400"
+          }
+        },
+        "fromEmail": "contact@semhys.com",
+        "toEmail": "contact@semhys.com",
+        "subject": "💬 Nueva Consulta General - SEMHYS Chat",
+        "text": "=NUEVA CONSULTA GENERAL\n\n👤 Sesión: {{$json.sessionId}}\n🕒 Hora: {{$json.timestamp}}\n📱 Idioma: {{$json.language}}\n\n💬 MENSAJE:\n{{$json.message}}\n\n🤖 Análisis IA:\n- Categoría: General\n- Confianza: {{Math.round($json.confidence * 100)}}%\n\nℹ️ Consulta de información general o comercial.",
+        "options": {
+          "allowUnauthorizedCerts": false
+        },
+        "transporterOptions": {
+          "host": "smtp.hostinger.com",
+          "port": 587,
+          "secure": false
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [680, 420],
+      "id": "general-email",
+      "name": "Email Consulta General"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"customResponse\": \"Gracias por tu consulta técnica. Nuestro equipo de ingeniería la revisará y te contactará a la brevedad con una solución especializada.\",\n  \"category\": \"{{$json.category}}\",\n  \"priority\": \"{{$json.priority}}\",\n  \"processed\": true\n}"
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1120, 180],
+      "id": "technical-response",
+      "name": "Respuesta Técnica"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"customResponse\": \"¡Gracias por contactarnos! Hemos recibido tu consulta y te responderemos pronto. Para información inmediata, puedes explorar nuestros servicios en la web.\",\n  \"category\": \"{{$json.category}}\",\n  \"priority\": \"{{$json.priority}}\",\n  \"processed\": true\n}"
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 420],
+      "id": "general-response",
+      "name": "Respuesta General"
+    }
+  ],
+  "connections": {
+    "Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "¿Es Consulta Técnica?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es Consulta Técnica?": {
+      "main": [
+        [
+          {
+            "node": "¿Es Urgente?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email Consulta General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es Urgente?": {
+      "main": [
+        [
+          {
+            "node": "Alerta Email Urgente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email Consulta Técnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alerta Email Urgente": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Técnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Consulta Técnica": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Técnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Consulta General": {
+      "main": [
+        [
+          {
+            "node": "Respuesta General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z",
+      "id": "semhys-chat",
+      "name": "SEMHYS Chat Agent"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "semhys-chat-v1"
+}
