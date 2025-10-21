@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEMHYS - Ingeniería y Automatización Industrial</title>
+    <link rel="icon" href="/favicon.ico" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            line-height: 1.6; 
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header */
+        .header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #764ba2;
+        }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #764ba2; }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards;
+        }
+        .hero-content p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.6s forwards;
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        /* Services */
+        .services {
+            padding: 80px 0;
+            background: white;
+        }
+        .services h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .service-card {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Contact */
+        .contact {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            text-align: center;
+        }
+        .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        .contact-item h3 {
+            margin-bottom: 0.5rem;
+            color: #ff6b6b;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Status Banner */
+        .status-banner {
+            background: #28a745;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Banner -->
+    <div class="status-banner">
+        🚀 Sistema SEMHYS Operativo - Agente de IA en Desarrollo | Versión 1.0
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">SEMHYS</div>
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+                <li><a href="#investigacion">IA Research</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <div class="hero-content">
+                <h1>SEMHYS</h1>
+                <p>Ingeniería y Automatización Industrial con Inteligencia Artificial</p>
+                <p>Sistemas especializados • Agente de investigación IA • Base de datos técnica</p>
+                <a href="#contacto" class="cta-button">Consulta Especializada</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="services" id="servicios">
+        <div class="container">
+            <h2>Nuestros Servicios</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>Automatización Industrial</h3>
+                    <p>Sistemas de control y automatización para optimizar procesos industriales con tecnología de vanguardia.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🤖</div>
+                    <h3>Agente de IA Especializado</h3>
+                    <p>Sistema de investigación técnica con ChatGPT integrado y base de datos de 22,000+ documentos especializados.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>Análisis Técnico</h3>
+                    <p>Evaluación de equipos, especificaciones técnicas y soluciones personalizadas para su industria.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">⚡</div>
+                    <h3>Sistemas Eléctricos</h3>
+                    <p>Diseño e implementación de sistemas eléctricos industriales y comerciales.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔍</div>
+                    <h3>Consultoría Especializada</h3>
+                    <p>Asesoramiento técnico especializado con respaldo de inteligencia artificial y experiencia industrial.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🛠️</div>
+                    <h3>Mantenimiento Industrial</h3>
+                    <p>Servicios de mantenimiento predictivo y correctivo para equipos industriales.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact" id="contacto">
+        <div class="container">
+            <h2>Contacta con SEMHYS</h2>
+            <p>Estamos listos para ayudarte con tu proyecto industrial</p>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h3>📧 Email</h3>
+                    <p>contact@semhys.com</p>
+                </div>
+                <div class="contact-item">
+                    <h3>🤖 Agente IA</h3>
+                    <p>Sistema de investigación técnica disponible</p>
+                </div>
+                <div class="contact-item">
+                    <h3>⚡ Respuesta</h3>
+                    <p>24-48 horas máximo</p>
+                </div>
+                <div class="contact-item">
+                    <h3>🔧 Especialidades</h3>
+                    <p>Automatización • IA • Sistemas Industriales</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 SEMHYS - Ingeniería y Automatización Industrial. Sistema con IA integrado.</p>
+            <p>🚀 Versión 1.0 | Agente de investigación con ChatGPT + Base de datos técnica</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255,255,255,0.98)';
+            } else {
+                header.style.background = 'rgba(255,255,255,0.95)';
+            }
+        });
+
+        console.log('🚀 SEMHYS Website Loaded - System Ready!');
+    </script>
+</body>
+</html>

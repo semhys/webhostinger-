@@ -1,0 +1,217 @@
+{
+  "name": "SEMHYS Chat Inteligente N8N",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "semhys-chat-intelligent",
+        "responseMode": "responseNode",
+        "responseData": "allEntries"
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "webhook-chat-intelligent",
+      "name": "Chat Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.message}}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isNotEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "id": "check-message",
+      "name": "Verificar Mensaje"
+    },
+    {
+      "parameters": {
+        "content": "# Análisis de Consulta SEMHYS\n\nMensaje del usuario: {{$json.message}}\nIdioma: {{$json.language || 'es'}}\nTimestamp: {{$json.timestamp}}\n\nClasifica esta consulta como:\n1. TÉCNICA: Consultas de ingeniería, equipos, especificaciones\n2. COMERCIAL: Precios, servicios, cotizaciones\n3. GENERAL: Información general, contacto\n\nProporciona una respuesta profesional y específica de SEMHYS.",
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 300
+        }
+      },
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [680, 200],
+      "id": "ai-analysis",
+      "name": "Análisis IA"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{$json.message.toLowerCase()}}",
+              "rightValue": "técnica|bomba|motor|válvula|sensor|automatización|industrial|ingeniería|especificación|calibración|mantenimiento|presión|temperatura|caudal|sistema",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 400],
+      "id": "classify-technical",
+      "name": "¿Es Técnica?"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseData": "={{{\n  \"success\": true,\n  \"response\": $('Análisis IA').first().json.choices[0].message.content,\n  \"category\": \"technical\",\n  \"priority\": \"high\",\n  \"timestamp\": new Date().toISOString(),\n  \"agent\": \"SEMHYS-AI\"\n}}}",
+        "responseStatusCode": 200,
+        "responseHeaders": {
+          "entries": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 200],
+      "id": "response-technical",
+      "name": "Respuesta Técnica"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseData": "={{{\n  \"success\": true,\n  \"response\": \"Gracias por tu consulta. Nuestro equipo comercial te contactará en breve para proporcionarte información detallada sobre nuestros servicios de ingeniería y automatización industrial. ¿Hay algún proyecto específico en el que podamos ayudarte?\",\n  \"category\": \"commercial\",\n  \"priority\": \"medium\",\n  \"timestamp\": new Date().toISOString(),\n  \"agent\": \"SEMHYS-Commercial\"\n}}}",
+        "responseStatusCode": 200,
+        "responseHeaders": {
+          "entries": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [900, 400],
+      "id": "response-commercial",
+      "name": "Respuesta Comercial"
+    },
+    {
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gmailOAuth2",
+        "subject": "Nueva Consulta SEMHYS Chat - {{$json.category}}",
+        "emailType": "html",
+        "message": "<h2>Nueva consulta desde SEMHYS Chat</h2>\n<p><strong>Mensaje:</strong> {{$json.message}}</p>\n<p><strong>Categoría:</strong> {{$json.category}}</p>\n<p><strong>Prioridad:</strong> {{$json.priority}}</p>\n<p><strong>Timestamp:</strong> {{$json.timestamp}}</p>\n<p><strong>Respuesta enviada:</strong> {{$json.response}}</p>",
+        "toEmail": "contact@semhys.com",
+        "fromEmail": "notifications@semhys.com"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "id": "email-notification",
+      "name": "Notificación Email"
+    }
+  ],
+  "connections": {
+    "Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Verificar Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Análisis IA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "¿Es Técnica?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Análisis IA": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Técnica",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es Técnica?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Respuesta Comercial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta Técnica": {
+      "main": [
+        [
+          {
+            "node": "Notificación Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta Comercial": {
+      "main": [
+        [
+          {
+            "node": "Notificación Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
