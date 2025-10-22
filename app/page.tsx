@@ -175,6 +175,7 @@ const languages = [
 export default function HomePage() {
   const [currentLang, setCurrentLang] = useState<Language>('en');
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   
   const t = content[currentLang];
 
