@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
 interface ResearchResult {
   id: string;
@@ -146,16 +147,29 @@ const ResearchAgent = () => {
   return (
     <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-teal-600 text-white p-6 rounded-lg mb-6 flex items-center">
-        <img 
-          src="/logo-semhys.png" 
-          alt="SEMHYS Logo" 
-          className="w-12 h-12 mr-4 bg-white rounded-full p-1"
-        />
-        <div>
-          <h1 className="text-3xl font-bold mb-2">🔬 Agente de Investigación SEMHYS</h1>
-          <p className="text-orange-100">Análisis técnico especializado sobre 22,210 documentos de ingeniería</p>
+      <div className="bg-gradient-to-r from-orange-500 to-teal-600 text-white p-6 rounded-lg mb-6 flex items-center justify-between">
+        <div className="flex items-center">
+          <Link 
+            href="/" 
+            className="mr-4 hover:opacity-80 transition-opacity"
+          >
+            <img 
+              src="/logo-semhys.png" 
+              alt="SEMHYS Logo" 
+              className="w-12 h-12 bg-white rounded-full p-1"
+            />
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold mb-2">🔬 Agente de Investigación SEMHYS</h1>
+            <p className="text-orange-100">Análisis técnico especializado sobre 22,210 documentos de ingeniería</p>
+          </div>
         </div>
+        <Link 
+          href="/" 
+          className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+        >
+          ← Inicio
+        </Link>
       </div>
 
       {/* Barra de búsqueda */}

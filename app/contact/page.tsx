@@ -104,24 +104,12 @@ export default function ContactPage() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="flex items-center">
-                <div className="mr-3 w-12 h-12 rounded-full relative shadow-lg overflow-hidden">
-                  {/* Segmentos de colores como en el logo original */}
-                  <div className="absolute inset-0 bg-orange-500"></div>
-                  <div className="absolute inset-0 bg-gradient-to-tl from-teal-500 via-teal-500/80 to-transparent"></div>
-                  <div className="absolute top-0 right-0 w-6 h-6 bg-emerald-500 rounded-bl-full"></div>
-                  
-                  {/* Círculo blanco interior */}
-                  <div className="absolute inset-2 rounded-full bg-white flex items-center justify-center">
-                    {/* El número 3 bold y grande */}
-                    <span className="text-orange-600 font-black text-lg leading-none" style={{ fontFamily: 'Arial Black, sans-serif' }}>3</span>
-                  </div>
-                  
-                  {/* Texto SEMHYS en curva inferior */}
-                  <div className="absolute bottom-0 inset-x-0 h-3 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold tracking-wider">SEMHYS</span>
-                  </div>
-                </div>
+              <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+                <img 
+                  src="/logo-semhys.png" 
+                  alt="SEMHYS Logo" 
+                  className="mr-3 w-12 h-12 rounded-full shadow-lg bg-white p-0.5"
+                />
                 <h1 className="text-2xl font-bold">SEMHYS</h1>
               </Link>
             </div>

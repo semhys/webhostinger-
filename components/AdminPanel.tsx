@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface AgentStats {
   status: 'online' | 'offline' | 'connecting';
@@ -136,11 +137,16 @@ const AdminPanel = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <img 
-                src="/logo-semhys.png" 
-                alt="SEMHYS Logo" 
-                className="w-12 h-12 mr-4 bg-white rounded-full p-1"
-              />
+              <Link 
+                href="/" 
+                className="mr-4 hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="/logo-semhys.png" 
+                  alt="SEMHYS Logo" 
+                  className="w-12 h-12 bg-white rounded-full p-1"
+                />
+              </Link>
               <div>
                 <h1 className="text-2xl font-bold text-white">
                   SEMHYS Agent Control Panel
