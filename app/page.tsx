@@ -197,7 +197,7 @@ export default function HomePage() {
                 <img 
                   src="/logo-semhys.png" 
                   alt="SEMHYS Logo" 
-                  className="mr-3 w-12 h-12 rounded-full shadow-lg bg-white p-0.5"
+                  className="mr-3 w-12 h-12 rounded-full shadow-lg"
                 />
                 <h1 className="text-2xl font-bold">SEMHYS</h1>
               </a>

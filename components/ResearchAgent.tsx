@@ -156,7 +156,7 @@ const ResearchAgent = () => {
             <img 
               src="/logo-semhys.png" 
               alt="SEMHYS Logo" 
-              className="w-12 h-12 bg-white rounded-full p-1"
+              className="w-12 h-12 rounded-full shadow-lg"
             />
           </Link>
           <div>
