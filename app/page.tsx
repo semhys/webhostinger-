@@ -186,12 +186,21 @@ export default function HomePage() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <img 
-                src="/logo-semhys.png" 
-                alt="SEMHYS Logo" 
-                className="mr-3 w-12 h-12 rounded-full shadow-lg bg-white p-0.5"
-              />
-              <h1 className="text-2xl font-bold">SEMHYS</h1>
+              <a 
+                href="#home" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="flex items-center hover:opacity-80 transition-opacity cursor-pointer"
+              >
+                <img 
+                  src="/logo-semhys.png" 
+                  alt="SEMHYS Logo" 
+                  className="mr-3 w-12 h-12 rounded-full shadow-lg bg-white p-0.5"
+                />
+                <h1 className="text-2xl font-bold">SEMHYS</h1>
+              </a>
             </div>
 
             {/* Desktop Navigation */}
