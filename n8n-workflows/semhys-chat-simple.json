@@ -1,0 +1,67 @@
+{
+  "name": "SEMHYS Chat - Clasificador Técnico/Comercial",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "semhys-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook_node",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extraer datos del mensaje\nconst message = $input.all()[0].body.message;\nconst language = $input.all()[0].body.language || 'es';\nconst sessionId = $input.all()[0].body.sessionId;\nconst timestamp = $input.all()[0].body.timestamp;\n\n// Convertir a minúsculas para análisis\nconst lowerMessage = message.toLowerCase();\n\n// Palabras clave TÉCNICAS\nconst technicalKeywords = [\n  'diseño', 'design', 'projeto',\n  'cálculo', 'calculation', 'cálculo',\n  'especificación', 'specification', 'especificação',\n  'tubería', 'pipe', 'tubulação',\n  'bomba', 'pump', 'bomba',\n  'sistemas', 'systems', 'sistemas',\n  'hidráulica', 'hydraulics', 'hidráulica',\n  'tratamiento', 'treatment', 'tratamento',\n  'agua', 'water', 'água',\n  'flujo', 'flow', 'fluxo',\n  'presión', 'pressure', 'pressão',\n  'acueducto', 'aqueduct', 'aqueduto',\n  'drenaje', 'drainage', 'drenagem',\n  'alcantarillado', 'sewer', 'esgoto',\n  'riego', 'irrigation', 'irrigação',\n  'plano', 'plan', 'plano',\n  'consultoría técnica', 'technical consulting', 'consultoria técnica'\n];\n\n// Palabras clave COMERCIALES\nconst commercialKeywords = [\n  'precio', 'price', 'preço',\n  'costo', 'cost', 'custo',\n  'presupuesto', 'budget', 'orçamento',\n  'contrato', 'contract', 'contrato',\n  'propuesta', 'proposal', 'proposta',\n  'servicios', 'services', 'serviços',\n  'consultoría', 'consulting', 'consultoria',\n  'proyectos', 'projects', 'projetos',\n  'equipo', 'team', 'equipe',\n  'experiencia', 'experience', 'experiência',\n  'referencias', 'references', 'referências',\n  'paquete', 'package', 'pacote',\n  'oferta', 'offer', 'oferta',\n  'disponibilidad', 'availability', 'disponibilidade',\n  'horarios', 'schedule', 'horários',\n  'capacidad', 'capacity', 'capacidade'\n];\n\n// Contar coincidencias\nlet technicalScore = 0;\nlet commercialScore = 0;\n\ntechnicalKeywords.forEach(keyword => {\n  if (lowerMessage.includes(keyword)) technicalScore++;\n});\n\ncommericalKeywords.forEach(keyword => {\n  if (lowerMessage.includes(keyword)) commercialScore++;\n});\n\n// Determinar categoría\nlet category = 'general';\nlet priority = 'medium';\nlet department = 'general';\nlet response = '';\n\nif (technicalScore > commercialScore && technicalScore > 0) {\n  category = 'technical';\n  department = 'Engineering';\n  priority = 'high';\n  \n  if (language === 'es') {\n    response = '✅ Consulta Técnica Detectada\\n\\nHe identificado que se trata de una consulta técnica sobre ingeniería de agua. Nuestro equipo de especialistas está revisando tu solicitud y se comunicará contigo dentro de 2-4 horas con una propuesta de solución personalizada.\\n\\n🔧 Áreas de especialidad:\\n• Diseño de sistemas hidráulicos\\n• Cálculos de flujo y presión\\n• Especificaciones de equipamiento\\n• Tratamiento y depuración de agua';\n  } else if (language === 'en') {\n    response = '✅ Technical Inquiry Detected\\n\\nI have identified this as a technical inquiry about water engineering. Our specialist team is reviewing your request and will contact you within 2-4 hours with a personalized solution proposal.\\n\\n🔧 Areas of expertise:\\n• Design of hydraulic systems\\n• Flow and pressure calculations\\n• Equipment specifications\\n• Water treatment and purification';\n  } else {\n    response = '✅ Consulta Técnica Detectada\\n\\nIdentifiquei que se trata de uma consulta técnica sobre engenharia hídrica. Nossa equipe de especialistas está analisando sua solicitação e entrará em contato com você dentro de 2-4 horas com uma proposta de solução personalizada.\\n\\n🔧 Áreas de especialidade:\\n• Design de sistemas hidráulicos\\n• Cálculos de fluxo e pressão\\n• Especificações de equipamento\\n• Tratamento e purificação de água';\n  }\n} else if (commercialScore > technicalScore && commercialScore > 0) {\n  category = 'commercial';\n  department = 'Sales';\n  priority = 'medium';\n  \n  if (language === 'es') {\n    response = '💼 Consulta Comercial Detectada\\n\\nHe identificado que se trata de una consulta comercial. Nuestro equipo de ventas está revisando tu solicitud y se comunicará contigo dentro de 24 horas con información sobre servicios, precios y disponibilidad.\\n\\n📊 Información que podemos proporcionarte:\\n• Paquetes de servicios\\n• Presupuestos personalizados\\n• Planes de implementación\\n• Referencias de proyectos anteriores';\n  } else if (language === 'en') {\n    response = '💼 Commercial Inquiry Detected\\n\\nI have identified this as a commercial inquiry. Our sales team is reviewing your request and will contact you within 24 hours with information about services, pricing, and availability.\\n\\n📊 Information we can provide:\\n• Service packages\\n• Custom quotes\\n• Implementation plans\\n• References from previous projects';\n  } else {\n    response = '💼 Consulta Comercial Detectada\\n\\nIdentifiquei que se trata de uma consulta comercial. Nossa equipe de vendas está analisando sua solicitação e entrará em contato com você dentro de 24 horas com informações sobre serviços, preços e disponibilidade.\\n\\n📊 Informações que podemos fornecer:\\n• Pacotes de serviços\\n• Orçamentos personalizados\\n• Planos de implementação\\n• Referências de projetos anteriores';\n  }\n} else {\n  // General inquiry\n  category = 'general';\n  department = 'Support';\n  priority = 'medium';\n  \n  if (language === 'es') {\n    response = '👋 Consulta General\\n\\nGracias por contactar a SEMHYS. Aunque no hemos podido clasificar tu mensaje específicamente como técnico o comercial, nuestro equipo está revisando tu solicitud.\\n\\n¿En qué podemos ayudarte? Cuéntanos más sobre tu necesidad:\\n• 🔧 ¿Es sobre un proyecto técnico?\\n• 💼 ¿Buscas información comercial?\\n• ❓ ¿Tienes otra consulta?';\n  } else if (language === 'en') {\n    response = '👋 General Inquiry\\n\\nThank you for contacting SEMHYS. Although we were unable to classify your message specifically as technical or commercial, our team is reviewing your request.\\n\\nHow can we help you? Tell us more about your need:\\n• 🔧 Is it about a technical project?\\n• 💼 Are you looking for commercial information?\\n• ❓ Do you have another inquiry?';\n  } else {\n    response = '👋 Consulta Geral\\n\\nObrigado por entrar em contato com a SEMHYS. Embora não tenhamos conseguido classificar sua mensagem especificamente como técnica ou comercial, nossa equipe está analisando sua solicitação.\\n\\nComo podemos ajudá-lo? Conte-nos mais sobre sua necessidade:\\n• 🔧 É sobre um projeto técnico?\\n• 💼 Procura informações comerciais?\\n• ❓ Tem outra consulta?';\n  }\n}\n\nreturn {\n  success: true,\n  response: response,\n  category: category,\n  department: department,\n  priority: priority,\n  agent: 'SEMHYS-N8N-Classifier',\n  timestamp: new Date().toISOString(),\n  sessionId: sessionId,\n  analyticsData: {\n    technicalScore: technicalScore,\n    commercialScore: commercialScore,\n    originalMessage: message,\n    language: language\n  }\n};"
+      },
+      "id": "function_node",
+      "name": "Clasificar: Técnico vs Comercial",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "responseData": "={{ $json }}"
+      },
+      "id": "respond_node",
+      "name": "Responder",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [750, 300]
+    }
+  ],
+  "connections": {
+    "webhook_node": {
+      "main": [
+        [
+          {
+            "node": "function_node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "function_node": {
+      "main": [
+        [
+          {
+            "node": "respond_node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "errorHandler": {
+      "type": "lastNodeOnly"
+    }
+  }
+}
