@@ -175,20 +175,20 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-gradient-to-r from-orange-500 to-teal-600 hover:from-orange-600 hover:to-teal-700 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
+          className="bg-gradient-to-r from-orange-500 to-teal-600 hover:from-orange-600 hover:to-teal-700 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
         >
           <div className="relative">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
             {/* Notification dot */}
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
           </div>
           {/* Tooltip */}
-          <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-xs sm:text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             {t.title}
           </div>
         </button>
@@ -197,23 +197,23 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+    <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 w-full sm:w-96 max-w-[calc(100vw-2rem)] h-[calc(100vh-8rem)] sm:h-[600px] bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-teal-600 text-white p-4 flex justify-between items-center">
-        <div className="flex items-center">
+      <div className="bg-gradient-to-r from-orange-500 to-teal-600 text-white p-3 sm:p-4 flex justify-between items-center flex-shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
           <img 
             src="/logo-semhys.png" 
             alt="SEMHYS Logo" 
-            className="w-8 h-8 mr-3 bg-white rounded-full p-0.5"
+            className="w-6 sm:w-8 h-6 sm:h-8 bg-white rounded-full p-0.5 flex-shrink-0"
           />
-          <div>
-            <h3 className="font-bold text-lg">{t.title}</h3>
-            <p className="text-orange-100 text-sm">{t.subtitle}</p>
+          <div className="min-w-0">
+            <h3 className="font-bold text-base sm:text-lg truncate">{t.title}</h3>
+            <p className="text-orange-100 text-xs sm:text-sm truncate">{t.subtitle}</p>
           </div>
         </div>
         <button
           onClick={() => setIsOpen(false)}
-          className="text-white hover:text-orange-200 transition-colors"
+          className="text-white hover:text-orange-200 transition-colors flex-shrink-0 ml-2"
           title={t.minimize}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,14 +223,14 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[80%] p-3 rounded-lg ${
+              className={`max-w-[85%] sm:max-w-[80%] p-2 sm:p-3 rounded-lg ${
                 message.type === 'user'
                   ? 'bg-gradient-to-r from-orange-500 to-teal-600 text-white'
                   : message.type === 'system'
@@ -238,7 +238,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
                   : 'bg-gray-100 text-gray-800'
               }`}
             >
-              <p className="text-sm">{message.content}</p>
+              <p className="text-xs sm:text-sm">{message.content}</p>
               <p className="text-xs opacity-70 mt-1">
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -253,7 +253,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
               <button
                 key={index}
                 onClick={() => handleQuickOption(option)}
-                className="w-full text-left p-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition-colors text-sm text-gray-700"
+                className="w-full text-left p-2 sm:p-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition-colors text-xs sm:text-sm text-gray-700"
               >
                 {option}
               </button>
@@ -264,7 +264,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
         {/* Typing Indicator */}
         {isTyping && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 p-3 rounded-lg">
+            <div className="bg-gray-100 p-2 sm:p-3 rounded-lg">
               <div className="flex items-center space-x-2">
                 <div className="typing-dots">
                   <div className="dot"></div>
@@ -281,23 +281,23 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex space-x-2">
+      <div className="p-3 sm:p-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex gap-2 sm:gap-3">
           <textarea
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={t.placeholder}
-            className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+            className="flex-1 p-2 sm:p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-xs sm:text-sm"
             rows={2}
             disabled={isLoading}
           />
           <button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isLoading}
-            className="bg-gradient-to-r from-orange-500 to-teal-600 hover:from-orange-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed text-white p-3 rounded-lg transition-all duration-200 transform hover:scale-105"
+            className="bg-gradient-to-r from-orange-500 to-teal-600 hover:from-orange-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 sm:p-3 rounded-lg transition-all duration-200 transform hover:scale-105 flex-shrink-0"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 sm:w-5 h-4 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
           </button>
