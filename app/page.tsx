@@ -267,7 +267,7 @@ export default function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto">
             {/* Main Heading */}
-            <h1 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">
               <span className="block">{t.hero.title.split(' ').slice(0, 2).join(' ')}</span>
               <span className="block bg-gradient-to-r from-orange-400 to-teal-400 bg-clip-text text-transparent">
                 {t.hero.title.split(' ').slice(2).join(' ')}
