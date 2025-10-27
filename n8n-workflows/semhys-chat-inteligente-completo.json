@@ -1,0 +1,110 @@
+{
+  "name": "SEMHYS Chat Inteligente Automatizado",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "a1a353bf-01ee-4c68-b7fe-7143bad7bd3d/chat",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook_chat",
+      "name": "Webhook Chat",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extraer datos\nconst message = $input.all()[0].body.message || '';\nconst language = $input.all()[0].body.language || 'es';\nconst sessionId = $input.all()[0].body.sessionId;\n\n// Detectar idioma automáticamente\nconst detectLanguage = (text) => {\n  if (!text) return 'es';\n  const lower = text.toLowerCase();\n  \n  // Palabras clave portuguesas\n  if (/\\b(olá|oi|obrigado|está|você|temos|projeto|como)\\b/.test(lower)) return 'pt';\n  // Palabras clave inglesas\n  if (/\\b(hello|hi|thank|please|what|how|design|system|water)\\b/.test(lower)) return 'en';\n  // Palabras clave españolas (default)\n  return 'es';\n};\n\nconst detectedLang = detectLanguage(message) || language;\n\n// Extraer nombre del cliente\nconst nameMatch = message.match(/\\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)\\b/);\nconst commonWords = ['hola', 'buenas', 'gracias', 'hello', 'hi', 'oi', 'obrigado', 'please', 'por', 'favor'];\nconst clientName = nameMatch && !commonWords.includes(nameMatch[1].toLowerCase()) ? nameMatch[1] : null;\n\nreturn {\n  message: message.trim(),\n  language: detectedLang,\n  sessionId: sessionId,\n  clientName: clientName,\n  messageLength: message.trim().length\n};"
+      },
+      "id": "extractor_node",
+      "name": "Extraer Datos",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Clasificar consulta como TÉCNICA o COMERCIAL\nconst message = $input.all()[0].body.message.toLowerCase();\nconst language = $input.all()[0].body.language;\n\n// Palabras clave TÉCNICAS\nconst technicalKeywords = [\n  'diseño', 'design', 'projeto',\n  'cálculo', 'calculation', 'cálculo',\n  'especificación', 'specification', 'especificação',\n  'tubería', 'pipe', 'tubulação',\n  'bomba', 'pump', 'bomba',\n  'sistemas', 'systems', 'sistemas',\n  'hidráulica', 'hydraulics', 'hidráulica',\n  'tratamiento', 'treatment', 'tratamento',\n  'agua', 'water', 'água',\n  'flujo', 'flow', 'fluxo',\n  'presión', 'pressure', 'pressão',\n  'acueducto', 'aqueduct', 'aqueduto',\n  'drenaje', 'drainage', 'drenagem',\n  'alcantarillado', 'sewer', 'esgoto',\n  'riego', 'irrigation', 'irrigação',\n  'plano', 'plan', 'plano',\n  'proyecto', 'project', 'projeto'\n];\n\n// Palabras clave COMERCIALES\nconst commercialKeywords = [\n  'precio', 'price', 'preço',\n  'costo', 'cost', 'custo',\n  'presupuesto', 'budget', 'orçamento',\n  'contrato', 'contract', 'contrato',\n  'propuesta', 'proposal', 'proposta',\n  'servicios', 'services', 'serviços',\n  'consultoría', 'consulting', 'consultoria',\n  'proyectos', 'projects', 'projetos',\n  'equipo', 'team', 'equipe',\n  'experiencia', 'experience', 'experiência',\n  'referencias', 'references', 'referências',\n  'paquete', 'package', 'pacote',\n  'oferta', 'offer', 'oferta',\n  'disponibilidad', 'availability', 'disponibilidade'\n];\n\n// Contar coincidencias\nlet technicalScore = 0;\nlet commercialScore = 0;\n\ntechnicalKeywords.forEach(keyword => {\n  const regex = new RegExp('\\\\b' + keyword + '\\\\b');\n  if (regex.test(message)) technicalScore++;\n});\n\ncommericalKeywords.forEach(keyword => {\n  const regex = new RegExp('\\\\b' + keyword + '\\\\b');\n  if (regex.test(message)) commercialScore++;\n});\n\n// Determinar categoría\nlet category = 'general';\nlet priority = 'medium';\nlet department = 'general';\n\nif (technicalScore > commercialScore && technicalScore > 0) {\n  category = 'technical';\n  department = 'Engineering';\n  priority = 'high';\n} else if (commercialScore > technicalScore && commercialScore > 0) {\n  category = 'commercial';\n  department = 'Sales';\n  priority = 'medium';\n}\n\nreturn {\n  category: category,\n  department: department,\n  priority: priority,\n  technicalScore: technicalScore,\n  commercialScore: commercialScore\n};"
+      },
+      "id": "classifier_node",
+      "name": "Clasificador de Consultas",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Generar respuesta personalizada según idioma y clasificación\nconst data = $input.all()[0].body;\nconst message = data.message;\nconst language = data.language;\nconst clientName = data.clientName;\nconst category = data.category;\nconst priority = data.priority;\n\n// Mensajes de saludo personalizados\nconst greetings = {\n  es: {\n    technical: clientName ? \n      `¡Hola ${clientName}! 👋\\n\\nHe detectado que se trata de una **consulta técnica**. Nuestro equipo de ingenieros especializados en sistemas hidráulicos revisará tu solicitud y te contactará en las próximas 2-4 horas.\\n\\n🔧 **Áreas que cubrimos:**\\n• Diseño de sistemas hidráulicos\\n• Cálculos de flujo y presión\\n• Especificaciones de equipamiento\\n• Tratamiento y depuración de agua\\n\\n¿Hay algo más específico que puedas detallar?` :\n      `¡Hola! 👋\\n\\nHe detectado que se trata de una **consulta técnica**. Nuestro equipo de ingenieros especializados revisará tu solicitud y te contactará en las próximas 2-4 horas.`,\n    \n    commercial: clientName ?\n      `¡Hola ${clientName}! 💼\\n\\nHe detectado que se trata de una **consulta comercial**. Nuestro equipo de ventas revisará tu solicitud y se comunicará contigo dentro de 24 horas con información sobre servicios, presupuestos y disponibilidad.\\n\\n📊 **Información que podemos proporcionar:**\\n• Paquetes de servicios\\n• Presupuestos personalizados\\n• Planes de implementación\\n• Referencias de proyectos anteriores` :\n      `¡Hola! 💼\\n\\nHe detectado que se trata de una **consulta comercial**. Nuestro equipo de ventas te contactará pronto.`,\n    \n    general: clientName ?\n      `¡Hola ${clientName}! 👋\\n\\nGracias por contactar a SEMHYS LLC. Aunque tu consulta no es específicamente técnica ni comercial, nuestro equipo está revisando tu solicitud.\\n\\n¿Podrías detallar un poco más sobre tu necesidad?` :\n      `¡Hola! 👋\\n\\nGracias por contactar a SEMHYS LLC. ¿En qué podemos ayudarte?`\n  },\n  en: {\n    technical: clientName ?\n      `Hello ${clientName}! 👋\\n\\nI've detected this is a **technical inquiry**. Our specialized engineering team will review your request and contact you within 2-4 hours.\\n\\n🔧 **Our expertise includes:**\\n• Hydraulic systems design\\n• Flow and pressure calculations\\n• Equipment specifications\\n• Water treatment and purification\\n\\nIs there anything more specific you'd like to share?` :\n      `Hello! 👋\\n\\nI've detected this is a **technical inquiry**. Our engineering team will review your request.`,\n    \n    commercial: clientName ?\n      `Hello ${clientName}! 💼\\n\\nI've detected this is a **commercial inquiry**. Our sales team will review your request and contact you within 24 hours with information about services, quotes, and availability.\\n\\n📊 **What we can provide:**\\n• Service packages\\n• Custom quotes\\n• Implementation plans\\n• References from previous projects` :\n      `Hello! 💼\\n\\nI've detected this is a **commercial inquiry**. Our sales team will contact you soon.`,\n    \n    general: clientName ?\n      `Hello ${clientName}! 👋\\n\\nThank you for contacting SEMHYS LLC. Although your inquiry isn't specifically technical or commercial, our team is reviewing it.\\n\\nCould you provide more details about your need?` :\n      `Hello! 👋\\n\\nThank you for contacting SEMHYS LLC. How can we assist you?`\n  },\n  pt: {\n    technical: clientName ?\n      `Olá ${clientName}! 👋\\n\\nDetectei que se trata de uma **consulta técnica**. Nosso equipe especializado em engenharia de sistemas hidráulicos revisará sua solicitação e entrará em contato com você dentro de 2-4 horas.\\n\\n🔧 **Nossas especialidades incluem:**\\n• Design de sistemas hidráulicos\\n• Cálculos de fluxo e pressão\\n• Especificações de equipamento\\n• Tratamento e purificação de água` :\n      `Olá! 👋\\n\\nDetectei que se trata de uma **consulta técnica**. Nosso equipe de engenheiros revisará sua solicitação.`,\n    \n    commercial: clientName ?\n      `Olá ${clientName}! 💼\\n\\nDetectei que se trata de uma **consulta comercial**. Nossa equipe de vendas revisará sua solicitação e entrará em contato com você dentro de 24 horas com informações sobre serviços, orçamentos e disponibilidade.\\n\\n📊 **O que podemos fornecer:**\\n• Pacotes de serviços\\n• Orçamentos personalizados\\n• Planos de implementação\\n• Referências de projetos anteriores` :\n      `Olá! 💼\\n\\nDetectei que se trata de uma **consulta comercial**. Nossa equipe de vendas entrará em contato em breve.`,\n    \n    general: clientName ?\n      `Olá ${clientName}! 👋\\n\\nObrigado por entrar em contato com a SEMHYS LLC. Embora sua consulta não seja especificamente técnica ou comercial, nossa equipe está analisando sua solicitação.\\n\\nPoderia fornecer mais detalhes sobre sua necessidade?` :\n      `Olá! 👋\\n\\nObrigado por entrar em contato com a SEMHYS LLC. Como podemos ajudá-lo?`\n  }\n};\n\nconst responses = greetings[language] || greetings.es;\nconst categoryKey = category === 'technical' ? 'technical' : category === 'commercial' ? 'commercial' : 'general';\nconst response = responses[categoryKey];\n\nreturn {\n  success: true,\n  response: response,\n  category: category,\n  priority: priority,\n  clientName: clientName,\n  language: language,\n  agent: 'SEMHYS-N8N-Intelligent',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "response_generator",
+      "name": "Generador de Respuesta",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "responseData": "={{ $json }}"
+      },
+      "id": "responder_node",
+      "name": "Responder al Chat",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    }
+  ],
+  "connections": {
+    "webhook_chat": {
+      "main": [
+        [
+          {
+            "node": "extractor_node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extractor_node": {
+      "main": [
+        [
+          {
+            "node": "classifier_node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "classifier_node": {
+      "main": [
+        [
+          {
+            "node": "response_generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "response_generator": {
+      "main": [
+        [
+          {
+            "node": "responder_node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "errorHandler": {
+      "type": "lastNodeOnly"
+    }
+  }
+}
