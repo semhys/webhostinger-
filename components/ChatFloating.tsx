@@ -91,6 +91,83 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  // Funciones de procesamiento de mensajes
+  const detectLanguage = (text: string): 'en' | 'es' | 'pt' => {
+    const lower = text.toLowerCase();
+    if (/\b(olá|oi|obrigado|está|você|temos|projeto|como)\b/.test(lower)) return 'pt';
+    if (/\b(hello|hi|thank|please|what|how|design|system|water)\b/.test(lower)) return 'en';
+    return 'es';
+  };
+
+  const extractClientName = (text: string): string | null => {
+    const match = text.match(/\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)\b/);
+    const commonWords = ['hola', 'buenas', 'gracias', 'hello', 'hi', 'oi', 'obrigado', 'please', 'por', 'favor'];
+    return match && !commonWords.includes(match[1].toLowerCase()) ? match[1] : null;
+  };
+
+  const classifyQuery = (text: string): { category: 'technical' | 'commercial' | 'general'; priority: string } => {
+    const lower = text.toLowerCase();
+    const technicalKeywords = ['diseño', 'design', 'projeto', 'cálculo', 'calculation', 'especificación', 'specification', 'tubería', 'pipe', 'tubulação', 'bomba', 'pump', 'sistemas', 'systems', 'hidráulica', 'hydraulics', 'tratamiento', 'treatment', 'agua', 'water', 'flujo', 'flow', 'presión', 'pressure', 'proyecto', 'project'];
+    const commercialKeywords = ['precio', 'price', 'preço', 'costo', 'cost', 'custo', 'presupuesto', 'budget', 'orçamento', 'contrato', 'contract', 'propuesta', 'proposal', 'servicios', 'services', 'serviços', 'consultoría', 'consulting', 'consultoria', 'paquete', 'package'];
+
+    let technicalScore = 0;
+    let commercialScore = 0;
+
+    technicalKeywords.forEach(kw => {
+      if (lower.includes(kw)) technicalScore++;
+    });
+    commercialKeywords.forEach(kw => {
+      if (lower.includes(kw)) commercialScore++;
+    });
+
+    if (technicalScore > commercialScore && technicalScore > 0) {
+      return { category: 'technical', priority: 'high' };
+    } else if (commercialScore > technicalScore && commercialScore > 0) {
+      return { category: 'commercial', priority: 'medium' };
+    }
+    return { category: 'general', priority: 'medium' };
+  };
+
+  const generateResponse = (message: string, lang: 'en' | 'es' | 'pt', clientName: string | null, category: 'technical' | 'commercial' | 'general'): string => {
+    const responses = {
+      es: {
+        technical: clientName 
+          ? `¡Hola ${clientName}! 👋\n\nHe detectado que es una **consulta técnica**. Nuestro equipo de ingenieros especializados en sistemas hidráulicos revisará tu solicitud y te contactará en las próximas 2-4 horas.\n\n🔧 **Áreas de especialidad:**\n• Diseño de sistemas hidráulicos\n• Cálculos de flujo y presión\n• Especificaciones de equipamiento\n• Tratamiento y depuración de agua`
+          : `¡Hola! 👋\n\nDetecté que es una **consulta técnica**. Nuestro equipo de ingeniería está revisando tu solicitud.`,
+        commercial: clientName
+          ? `¡Hola ${clientName}! 💼\n\nDetecté que es una **consulta comercial**. Nuestro equipo de ventas te contactará dentro de 24 horas con información sobre servicios, presupuestos y disponibilidad.\n\n📊 **Información que podemos proporcionar:**\n• Paquetes de servicios\n• Presupuestos personalizados\n• Planes de implementación`
+          : `¡Hola! 💼\n\nDetecté que es una **consulta comercial**. Nuestro equipo de ventas te contactará pronto.`,
+        general: clientName
+          ? `¡Hola ${clientName}! 👋\n\nGracias por contactar a SEMHYS LLC. Tu consulta ha sido registrada y nuestro equipo te responderá pronto.`
+          : `¡Hola! 👋\n\nGracias por contactar a SEMHYS LLC. ¿En qué podemos ayudarte?`
+      },
+      en: {
+        technical: clientName
+          ? `Hello ${clientName}! 👋\n\nI've detected this is a **technical inquiry**. Our specialized engineering team will review your request and contact you within 2-4 hours.\n\n🔧 **Our expertise includes:**\n• Hydraulic systems design\n• Flow and pressure calculations\n• Equipment specifications\n• Water treatment and purification`
+          : `Hello! 👋\n\nI've detected this is a **technical inquiry**. Our engineering team is reviewing your request.`,
+        commercial: clientName
+          ? `Hello ${clientName}! 💼\n\nI've detected this is a **commercial inquiry**. Our sales team will contact you within 24 hours with information about services, quotes, and availability.\n\n📊 **What we can provide:**\n• Service packages\n• Custom quotes\n• Implementation plans`
+          : `Hello! 💼\n\nI've detected this is a **commercial inquiry**. Our sales team will contact you soon.`,
+        general: clientName
+          ? `Hello ${clientName}! 👋\n\nThank you for contacting SEMHYS LLC. Your inquiry has been recorded and our team will respond soon.`
+          : `Hello! 👋\n\nThank you for contacting SEMHYS LLC. How can we assist you?`
+      },
+      pt: {
+        technical: clientName
+          ? `Olá ${clientName}! 👋\n\nDetectei que é uma **consulta técnica**. Nossa equipe especializada em engenharia de sistemas hidráulicos revisará sua solicitação e entrará em contato em 2-4 horas.\n\n🔧 **Nossas especialidades:**\n• Design de sistemas hidráulicos\n• Cálculos de fluxo e pressão\n• Especificações de equipamento\n• Tratamento e purificação de água`
+          : `Olá! 👋\n\nDetectei que é uma **consulta técnica**. Nossa equipe de engenharia está revisando sua solicitação.`,
+        commercial: clientName
+          ? `Olá ${clientName}! 💼\n\nDetectei que é uma **consulta comercial**. Nosso equipe de vendas entrará em contato em 24 horas com informações sobre serviços, orçamentos e disponibilidade.\n\n📊 **Informações que podemos fornecer:**\n• Pacotes de serviços\n• Orçamentos personalizados\n• Planos de implementação`
+          : `Olá! 💼\n\nDetectei que é uma **consulta comercial**. Nosso equipe de vendas entrará em contato em breve.`,
+        general: clientName
+          ? `Olá ${clientName}! 👋\n\nObrigado por entrar em contato com a SEMHYS LLC. Sua consulta foi registrada e nossa equipe responderá em breve.`
+          : `Olá! 👋\n\nObrigado por entrar em contato com a SEMHYS LLC. Como podemos ajudá-lo?`
+      }
+    };
+
+    return responses[lang]?.[category] || responses.es.general;
+  };
+
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
 
@@ -107,41 +184,51 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     setIsTyping(true);
 
     try {
-      // Enviar a n8n para clasificación y respuesta
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: userMessage.content,
-          language: language,
-          timestamp: userMessage.timestamp.toISOString(),
-          sessionId: `chat-${Date.now()}`
-        })
-      });
+      // Detectar idioma, nombre y clasificar
+      const detectedLang = detectLanguage(userMessage.content) as 'en' | 'es' | 'pt';
+      const clientName = extractClientName(userMessage.content);
+      const classification = classifyQuery(userMessage.content);
 
-      const result = await response.json();
+      // Generar respuesta personalizada
+      const botResponse = generateResponse(
+        userMessage.content,
+        detectedLang,
+        clientName,
+        classification.category
+      );
 
-      if (result.success) {
-        const botMessage: Message = {
-          id: `bot-${Date.now()}`,
-          type: 'bot',
-          content: result.response,
-          timestamp: new Date(),
-          category: result.category || 'general'
-        };
-
-        // Simular typing delay
-        setTimeout(() => {
-          setIsTyping(false);
-          setMessages(prev => [...prev, botMessage]);
-          setIsLoading(false);
-        }, 1500);
-
-      } else {
-        throw new Error(result.error || 'Error en el chat');
+      // Enviar a N8N si está configurado
+      try {
+        await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: userMessage.content,
+            language: detectedLang,
+            timestamp: userMessage.timestamp.toISOString(),
+            sessionId: `chat-${Date.now()}`,
+            clientName: clientName,
+            category: classification.category
+          })
+        });
+      } catch {
+        console.log('N8N webhook not available, using local response');
       }
+
+      const botMessage: Message = {
+        id: `bot-${Date.now()}`,
+        type: 'bot',
+        content: botResponse,
+        timestamp: new Date(),
+        category: classification.category
+      };
+
+      // Simular typing delay
+      setTimeout(() => {
+        setIsTyping(false);
+        setMessages(prev => [...prev, botMessage]);
+        setIsLoading(false);
+      }, 1500);
 
     } catch (error) {
       console.error('Chat error:', error);
