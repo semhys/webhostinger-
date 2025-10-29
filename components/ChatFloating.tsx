@@ -4,10 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 
 interface Message {
   id: string;
-  type: 'user' | 'bot' | 'system';
+  type: 'user' | 'bot';
   content: string;
   timestamp: Date;
-  category?: 'general' | 'technical' | 'routing';
 }
 
 interface ChatFloatingProps {
@@ -19,35 +18,24 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sessionIdRef = useRef<string>(`chat-${Date.now()}`);
 
   const texts = {
     en: {
       title: 'SEMHYS Technical Support',
       subtitle: 'Engineering Assistance',
-      placeholder: 'Type your engineering question...',
+      placeholder: 'Type your question...',
       send: 'Send',
-      minimize: 'Minimize',
-      welcome: '👋 Hello! I\'m SEMHYS AI Assistant. I can help you with:',
-      options: [
-        '🔧 Technical specifications',
-        '⚙️ Engineering solutions', 
-        '📊 Project consultations',
-        '🛠️ Industrial automation'
-      ],
-      typing: 'SEMHYS AI is thinking...'
+      welcome: '👋 Hello! How can SEMHYS help you today?'
     },
     es: {
       title: 'Soporte Técnico SEMHYS',
       subtitle: 'Asistencia en Ingeniería',
-      placeholder: 'Escribe tu consulta de ingeniería...',
+      placeholder: 'Escribe tu pregunta...',
       send: 'Enviar',
-      minimize: 'Minimizar',
-      welcome: '👋 ¡Hola! Soy el Asistente IA de SEMHYS. Puedo ayudarte con:',
-      options: [
-        '🔧 Especificaciones técnicas',
-        '⚙️ Soluciones de ingeniería',
+      welcome: '👋 ¡Hola! ¿Cómo puede ayudarte SEMHYS hoy?'
+    },
         '📊 Consultas de proyectos', 
         '🛠️ Automatización industrial'
       ],
@@ -56,17 +44,9 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     pt: {
       title: 'Suporte Técnico SEMHYS',
       subtitle: 'Assistência em Engenharia',
-      placeholder: 'Digite sua consulta de engenharia...',
+      placeholder: 'Digite sua pergunta...',
       send: 'Enviar',
-      minimize: 'Minimizar',
-      welcome: '👋 Olá! Sou o Assistente IA da SEMHYS. Posso ajudá-lo com:',
-      options: [
-        '🔧 Especificações técnicas',
-        '⚙️ Soluções de engenharia',
-        '📊 Consultas de projetos',
-        '🛠️ Automação industrial'
-      ],
-      typing: 'IA SEMHYS está pensando...'
+      welcome: '👋 Olá! Como SEMHYS pode ajudá-lo?'
     }
   };
 
@@ -79,8 +59,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
         id: `welcome-${Date.now()}`,
         type: 'bot',
         content: t.welcome,
-        timestamp: new Date(),
-        category: 'general'
+        timestamp: new Date()
       };
       setMessages([welcomeMessage]);
     }
@@ -89,7 +68,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
   // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+  }, [messages, isLoading]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isLoading) return;
@@ -104,56 +83,53 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsLoading(true);
-    setIsTyping(true);
 
     try {
-      // Enviar a N8N y esperar respuesta
-      const response = await fetch('/api/chat', {
+      // Enviar directamente a N8N webhook
+      const n8nWebhookUrl = 'https://semhys.app.n8n.cloud/webhook/a1a353bf-01ee-4c68-b7fe-7143bad7bd3d/chat';
+      
+      const response = await fetch(n8nWebhookUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: userMessage.content,
-          language: language,
+          chatInput: userMessage.content,
+          language: language || 'es',
           timestamp: userMessage.timestamp.toISOString(),
-          sessionId: `chat-${Date.now()}`
+          sessionId: sessionIdRef.current,
+          source: 'semhys-chat-flotante'
         })
       });
 
-      const result = await response.json();
-
-      if (result.success && result.response) {
-        const botMessage: Message = {
-          id: `bot-${Date.now()}`,
-          type: 'bot',
-          content: result.response,
-          timestamp: new Date(),
-          category: result.category || 'general'
-        };
-
-        setTimeout(() => {
-          setIsTyping(false);
-          setMessages(prev => [...prev, botMessage]);
-          setIsLoading(false);
-        }, 1000);
-      } else {
-        throw new Error('Sin respuesta de N8N');
+      if (!response.ok) {
+        throw new Error(`N8N error: ${response.status}`);
       }
+
+      const result = await response.json();
+      
+      // N8N envía la respuesta en el formato del workflow
+      const botMessage: Message = {
+        id: `bot-${Date.now()}`,
+        type: 'bot',
+        content: result.message || result.response || 'Consulta procesada correctamente.',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, botMessage]);
 
     } catch (error) {
       console.error('Chat error:', error);
-      setIsTyping(false);
       
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
-        type: 'system',
+        type: 'bot',
         content: language === 'es' 
-          ? 'Lo siento, hubo un error. Por favor intenta de nuevo.' 
-          : 'Sorry, there was an error. Please try again.',
-        timestamp: new Date(),
-        category: 'general'
+          ? 'Lo siento, no pude procesar tu consulta en este momento. Por favor intenta de nuevo.' 
+          : 'Sorry, I could not process your request. Please try again.',
+        timestamp: new Date()
       };
 
       setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -165,10 +141,6 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     }
   };
 
-  const handleQuickOption = (option: string) => {
-    setInputValue(option);
-  };
-
   if (!isOpen) {
     return (
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
@@ -176,14 +148,9 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
           onClick={() => setIsOpen(true)}
           className="bg-gradient-to-r from-orange-500 to-teal-600 hover:from-orange-600 hover:to-teal-700 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
         >
-          <div className="relative">
-            <svg className="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            {/* Notification dot */}
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-          </div>
-          {/* Tooltip */}
+          <svg className="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
           <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-xs sm:text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             {t.title}
           </div>
@@ -197,11 +164,9 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-teal-600 text-white p-3 sm:p-4 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <img 
-            src="/logo-semhys.png" 
-            alt="SEMHYS Logo" 
-            className="w-6 sm:w-8 h-6 sm:h-8 bg-white rounded-full p-0.5 flex-shrink-0"
-          />
+          <div className="w-6 sm:w-8 h-6 sm:h-8 bg-white rounded-full p-1 flex items-center justify-center flex-shrink-0">
+            <span className="text-orange-500 font-bold text-sm">S</span>
+          </div>
           <div className="min-w-0">
             <h3 className="font-bold text-base sm:text-lg truncate">{t.title}</h3>
             <p className="text-orange-100 text-xs sm:text-sm truncate">{t.subtitle}</p>
@@ -210,7 +175,6 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
         <button
           onClick={() => setIsOpen(false)}
           className="text-white hover:text-orange-200 transition-colors flex-shrink-0 ml-2"
-          title={t.minimize}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -229,12 +193,10 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
               className={`max-w-[85%] sm:max-w-[80%] p-2 sm:p-3 rounded-lg ${
                 message.type === 'user'
                   ? 'bg-gradient-to-r from-orange-500 to-teal-600 text-white'
-                  : message.type === 'system'
-                  ? 'bg-red-100 text-red-800 border border-red-200'
                   : 'bg-gray-100 text-gray-800'
               }`}
             >
-              <p className="text-xs sm:text-sm">{message.content}</p>
+              <p className="text-xs sm:text-sm leading-relaxed">{message.content}</p>
               <p className="text-xs opacity-70 mt-1">
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -242,32 +204,11 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
           </div>
         ))}
 
-        {/* Quick Options */}
-        {messages.length === 1 && (
-          <div className="space-y-2">
-            {t.options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleQuickOption(option)}
-                className="w-full text-left p-2 sm:p-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition-colors text-xs sm:text-sm text-gray-700"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Typing Indicator */}
-        {isTyping && (
+        {isLoading && (
           <div className="flex justify-start">
             <div className="bg-gray-100 p-2 sm:p-3 rounded-lg">
               <div className="flex items-center space-x-2">
-                <div className="typing-dots">
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                </div>
-                <span className="text-xs text-gray-500">{t.typing}</span>
+                <span className="text-xs text-gray-500">Procesando...</span>
               </div>
             </div>
           </div>
@@ -299,30 +240,6 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
           </button>
         </div>
       </div>
-
-      {/* CSS for typing animation */}
-      <style jsx>{`
-        .typing-dots {
-          display: flex;
-          align-items: center;
-          space-x: 2px;
-        }
-        .dot {
-          width: 6px;
-          height: 6px;
-          background-color: #6b7280;
-          border-radius: 50%;
-          margin-right: 4px;
-          animation: typing 1.4s infinite ease-in-out;
-        }
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes typing {
-          0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
-          40% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 };
