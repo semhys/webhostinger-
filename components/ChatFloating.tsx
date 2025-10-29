@@ -4,10 +4,9 @@ import { useState, useRef, useEffect } from 'react';
 
 interface Message {
   id: string;
-  type: 'user' | 'bot' | 'system';
+  type: 'user' | 'bot';
   content: string;
   timestamp: Date;
-  category?: 'general' | 'technical' | 'routing';
 }
 
 interface ChatFloatingProps {
@@ -25,47 +24,20 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     en: {
       title: 'SEMHYS Technical Support',
       subtitle: 'Engineering Assistance',
-      placeholder: 'Type your engineering question...',
-      send: 'Send',
-      minimize: 'Minimize',
-      welcome: '👋 Hello! I\'m SEMHYS AI Assistant. I can help you with:',
-      options: [
-        '🔧 Technical specifications',
-        '⚙️ Engineering solutions', 
-        '📊 Project consultations',
-        '🛠️ Industrial automation'
-      ],
-      typing: 'SEMHYS AI is thinking...'
+      placeholder: 'Type your question...',
+      welcome: '👋 Hello! How can we help?'
     },
     es: {
       title: 'Soporte Técnico SEMHYS',
       subtitle: 'Asistencia en Ingeniería',
-      placeholder: 'Escribe tu consulta de ingeniería...',
-      send: 'Enviar',
-      minimize: 'Minimizar',
-      welcome: '👋 ¡Hola! Soy el Asistente IA de SEMHYS. Puedo ayudarte con:',
-      options: [
-        '🔧 Especificaciones técnicas',
-        '⚙️ Soluciones de ingeniería',
-        '📊 Consultas de proyectos', 
-        '🛠️ Automatización industrial'
-      ],
-      typing: 'IA SEMHYS está pensando...'
+      placeholder: 'Escribe tu pregunta...',
+      welcome: '👋 ¡Hola! ¿Cómo podemos ayudarte?'
     },
     pt: {
       title: 'Suporte Técnico SEMHYS',
       subtitle: 'Assistência em Engenharia',
-      placeholder: 'Digite sua consulta de engenharia...',
-      send: 'Enviar',
-      minimize: 'Minimizar',
-      welcome: '👋 Olá! Sou o Assistente IA da SEMHYS. Posso ajudá-lo com:',
-      options: [
-        '🔧 Especificações técnicas',
-        '⚙️ Soluções de engenharia',
-        '📊 Consultas de projetos',
-        '🛠️ Automação industrial'
-      ],
-      typing: 'IA SEMHYS está pensando...'
+      placeholder: 'Digite sua pergunta...',
+      welcome: '👋 Olá! Como podemos ajudá-lo?'
     }
   };
 
@@ -78,8 +50,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
         id: `welcome-${Date.now()}`,
         type: 'bot',
         content: t.welcome,
-        timestamp: new Date(),
-        category: 'general'
+        timestamp: new Date()
       };
       setMessages([welcomeMessage]);
     }
@@ -105,7 +76,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     setIsLoading(true);
 
     try {
-      // Enviar directamente a N8N webhook
+      // Enviar DIRECTAMENTE a N8N webhook - sin procesamiento local
       const n8nWebhookUrl = 'https://semhys.app.n8n.cloud/webhook/a1a353bf-01ee-4c68-b7fe-7143bad7bd3d/chat';
       
       const response = await fetch(n8nWebhookUrl, {
@@ -113,42 +84,35 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chatInput: userMessage.content,
-          language: language || 'es',
+          language: language,
           timestamp: userMessage.timestamp.toISOString(),
           sessionId: `chat-${Date.now()}`,
           source: 'semhys-chat-flotante'
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`N8N error: ${response.status}`);
+      if (response.ok) {
+        const result = await response.json();
+        // Mostrar TODO lo que devuelve N8N tal cual
+        const botMessage: Message = {
+          id: `bot-${Date.now()}`,
+          type: 'bot',
+          content: result.message || JSON.stringify(result),
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botMessage]);
+      } else {
+        throw new Error(`N8N HTTP ${response.status}`);
       }
 
-      const result = await response.json();
-      
-      // N8N envía la respuesta en el formato del workflow
-      const botMessage: Message = {
-        id: `bot-${Date.now()}`,
-        type: 'bot',
-        content: result.message || result.response || 'Consulta procesada correctamente.',
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-
     } catch (error) {
-      console.error('Chat error:', error);
-      
-      const errorMessage: Message = {
+      console.error('N8N error:', error);
+      setMessages(prev => [...prev, {
         id: `error-${Date.now()}`,
         type: 'bot',
-        content: language === 'es' 
-          ? 'Lo siento, no pude procesar tu consulta en este momento. Por favor intenta de nuevo.' 
-          : 'Sorry, I could not process your request. Please try again.',
+        content: `Error: ${error instanceof Error ? error.message : 'Error desconocido'}`,
         timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
+      }]);
     } finally {
       setIsLoading(false);
     }
