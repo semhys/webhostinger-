@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from 'react';
 
 interface Message {
   id: string;
-  type: 'user' | 'bot';
+  type: 'user' | 'bot' | 'system';
   content: string;
   timestamp: Date;
+  category?: 'general' | 'technical' | 'routing';
 }
 
 interface ChatFloatingProps {
@@ -19,23 +20,33 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const sessionIdRef = useRef<string>(`chat-${Date.now()}`);
 
   const texts = {
     en: {
       title: 'SEMHYS Technical Support',
       subtitle: 'Engineering Assistance',
-      placeholder: 'Type your question...',
+      placeholder: 'Type your engineering question...',
       send: 'Send',
-      welcome: '👋 Hello! How can SEMHYS help you today?'
+      minimize: 'Minimize',
+      welcome: '👋 Hello! I\'m SEMHYS AI Assistant. I can help you with:',
+      options: [
+        '🔧 Technical specifications',
+        '⚙️ Engineering solutions', 
+        '📊 Project consultations',
+        '🛠️ Industrial automation'
+      ],
+      typing: 'SEMHYS AI is thinking...'
     },
     es: {
       title: 'Soporte Técnico SEMHYS',
       subtitle: 'Asistencia en Ingeniería',
-      placeholder: 'Escribe tu pregunta...',
+      placeholder: 'Escribe tu consulta de ingeniería...',
       send: 'Enviar',
-      welcome: '👋 ¡Hola! ¿Cómo puede ayudarte SEMHYS hoy?'
-    },
+      minimize: 'Minimizar',
+      welcome: '👋 ¡Hola! Soy el Asistente IA de SEMHYS. Puedo ayudarte con:',
+      options: [
+        '🔧 Especificaciones técnicas',
+        '⚙️ Soluciones de ingeniería',
         '📊 Consultas de proyectos', 
         '🛠️ Automatización industrial'
       ],
@@ -44,9 +55,17 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
     pt: {
       title: 'Suporte Técnico SEMHYS',
       subtitle: 'Assistência em Engenharia',
-      placeholder: 'Digite sua pergunta...',
+      placeholder: 'Digite sua consulta de engenharia...',
       send: 'Enviar',
-      welcome: '👋 Olá! Como SEMHYS pode ajudá-lo?'
+      minimize: 'Minimizar',
+      welcome: '👋 Olá! Sou o Assistente IA da SEMHYS. Posso ajudá-lo com:',
+      options: [
+        '🔧 Especificações técnicas',
+        '⚙️ Soluções de engenharia',
+        '📊 Consultas de projetos',
+        '🛠️ Automação industrial'
+      ],
+      typing: 'IA SEMHYS está pensando...'
     }
   };
 
@@ -59,7 +78,8 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
         id: `welcome-${Date.now()}`,
         type: 'bot',
         content: t.welcome,
-        timestamp: new Date()
+        timestamp: new Date(),
+        category: 'general'
       };
       setMessages([welcomeMessage]);
     }
@@ -95,7 +115,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
           chatInput: userMessage.content,
           language: language || 'es',
           timestamp: userMessage.timestamp.toISOString(),
-          sessionId: sessionIdRef.current,
+          sessionId: `chat-${Date.now()}`,
           source: 'semhys-chat-flotante'
         })
       });
@@ -148,9 +168,14 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
           onClick={() => setIsOpen(true)}
           className="bg-gradient-to-r from-orange-500 to-teal-600 hover:from-orange-600 hover:to-teal-700 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group"
         >
-          <svg className="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
+          <div className="relative">
+            <svg className="w-5 sm:w-6 h-5 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            {/* Notification dot */}
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+          </div>
+          {/* Tooltip */}
           <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-xs sm:text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
             {t.title}
           </div>
@@ -175,6 +200,7 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
         <button
           onClick={() => setIsOpen(false)}
           className="text-white hover:text-orange-200 transition-colors flex-shrink-0 ml-2"
+          title={t.minimize}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -193,10 +219,12 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
               className={`max-w-[85%] sm:max-w-[80%] p-2 sm:p-3 rounded-lg ${
                 message.type === 'user'
                   ? 'bg-gradient-to-r from-orange-500 to-teal-600 text-white'
+                  : message.type === 'system'
+                  ? 'bg-red-100 text-red-800 border border-red-200'
                   : 'bg-gray-100 text-gray-800'
               }`}
             >
-              <p className="text-xs sm:text-sm leading-relaxed">{message.content}</p>
+              <p className="text-xs sm:text-sm">{message.content}</p>
               <p className="text-xs opacity-70 mt-1">
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
@@ -240,6 +268,10 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
           </button>
         </div>
       </div>
+
+      {/* CSS for typing animation */}
+      <style jsx>{`
+      `}</style>
     </div>
   );
 };
