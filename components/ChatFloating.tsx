@@ -43,19 +43,6 @@ const ChatFloating = ({ language = 'en' }: ChatFloatingProps) => {
 
   const t = texts[language];
 
-  // Welcome message
-  useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      const welcomeMessage: Message = {
-        id: `welcome-${Date.now()}`,
-        type: 'bot',
-        content: t.welcome,
-        timestamp: new Date()
-      };
-      setMessages([welcomeMessage]);
-    }
-  }, [isOpen, messages.length, t.welcome]);
-
   // Auto scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
