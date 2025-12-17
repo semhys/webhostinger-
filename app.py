@@ -111,3 +111,5 @@ if prompt := st.chat_input("Escribe tu consulta técnica aquí..."):
             
     # Guardar respuesta asistente
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+# Force Re-deploy
