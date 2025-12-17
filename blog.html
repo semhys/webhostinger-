@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia Técnica - SEMHYS</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #004e92;
+            --color-secondary: #ff6b00;
+            --color-dark: #1a1a1a;
+            --color-light: #f4f4f4;
+            --color-white: #ffffff;
+            --font-main: 'Inter', sans-serif;
+            --font-tech: 'Roboto Mono', monospace;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-dark);
+            background-color: var(--color-light);
+            line-height: 1.8;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        header {
+            background: white;
+            width: 100%;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+        }
+
+        /* --- Navigation --- */
+        .main-nav ul {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .main-nav a {
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .main-nav a:hover {
+            color: var(--color-primary);
+        }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--color-dark);
+            transition: var(--transition);
+        }
+
+        @media (max-width: 768px) {
+            .main-nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                background: white;
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+                padding: 5rem 2rem;
+                transition: var(--transition);
+            }
+
+            .main-nav.active {
+                right: 0;
+            }
+
+            .main-nav ul {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .main-nav a {
+                font-size: 1.2rem;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .menu-toggle.active .bar:nth-child(1) {
+                transform: rotate(-45deg) translate(-5px, 6px);
+            }
+
+            .menu-toggle.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle.active .bar:nth-child(3) {
+                transform: rotate(45deg) translate(-5px, -6px);
+            }
+        }
+
+        /* Blog Content */
+        .container {
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+
+        .article {
+            background: white;
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 4rem;
+        }
+
+        .article-meta {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .article h2 {
+            font-size: 2.2rem;
+            color: var(--color-primary);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .article p {
+            margin-bottom: 1.5rem;
+            color: #444;
+        }
+
+        .article h3 {
+            font-size: 1.4rem;
+            color: var(--color-dark);
+            margin: 2rem 0 1rem 0;
+        }
+
+        .tech-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--color-secondary);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            font-family: var(--font-tech);
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        footer {
+            background: #111;
+            color: #888;
+            padding: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="logo.png" alt="SEMHYS Logo">
+            </a>
+
+            <!-- Mobile Menu Button -->
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <!-- Main Navigation -->
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="index.html" onclick="toggleMenu()" data-i18n="nav_home">Inicio</a></li>
+                    <li><a href="index.html#services" onclick="toggleMenu()" data-i18n="nav_services">Servicios</a></li>
+                    <li><a href="shop.html" data-i18n="nav_shop">Tienda</a></li>
+                    <li><a href="blog.html" data-i18n="nav_blog">Academia</a></li>
+                    <li>
+                        <div class="lang-selector">
+                            <select id="languageSelect" onchange="changeLanguage()">
+                                <option value="es">ES</option>
+                                <option value="en">EN</option>
+                                <option value="pt">PT</option>
+                                <option value="fr">FR</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <script>
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+            const toggle = document.querySelector('.menu-toggle');
+            nav.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+    </script>
+
+    <div class="container">
+
+        <!-- Article 1 -->
+        <article class="article">
+            <span class="article-meta" data-i18n="blog_art1_meta">Hidráulica | Oct 12, 2024</span>
+            <h2 data-i18n="blog_art1_title">Cavitación en Bombas Centrífugas: El Enemigo Silencioso</h2>
+            <p data-i18n="blog_art1_p1">La cavitación es uno de los fenómenos más destructivos en los sistemas de bombeo
+                industrial. Ocurre
+                cuando la presión del fluido cae por debajo de su presión de vapor, formando burbujas que colapsan
+                violentamente al llegar a zonas de mayor presión.</p>
+
+            <h3 data-i18n="blog_art1_h3_1">Causas Principales</h3>
+            <p data-i18n="blog_art1_p2">Frecuentemente, la cavitación es causada por un NPSH (Net Positive Suction Head)
+                disponible
+                insuficiente.
+                Esto puede deberse a:</p>
+            <ul data-i18n="blog_art1_list">
+                <li>- Tuberías de succión obstruidas o mal dimensionadas.</li>
+                <li>- Alturas de succión excesivas.</li>
+                <li>- Fluido a temperatura demasiado alta.</li>
+            </ul>
+
+            <div class="tech-box" data-i18n="blog_art1_tech">
+                DIAGNÓSTICO TÉCNICO: Ruido similar a "bombear grava", vibración excesiva en los rodamientos y caída
+                repentina de la curva de presión-caudal.
+            </div>
+
+            <h3 data-i18n="blog_art1_h3_2">Soluciones de Ingeniería</h3>
+            <p data-i18n="blog_art1_p3">Para mitigar este problema, es crucial rediseñar la línea de succión para
+                minimizar pérdidas por
+                fricción, aumentar el nivel del tanque de succión o, en casos extremos, utilizar inductores en el
+                impulsor de la bomba.</p>
+        </article>
+
+        <!-- Article 2 -->
+        <article class="article">
+            <span class="article-meta" data-i18n="blog_art2_meta">Eficiencia Energética | Sep 28, 2024</span>
+            <h2 data-i18n="blog_art2_title">Normativa ISO 50001 en Plantas de Tratamiento</h2>
+            <p data-i18n="blog_art2_p1">Las plantas de tratamiento de aguas residuales (PTAR) son consumidores
+                intensivos de energía, a
+                menudo
+                representando el 30-40% del presupuesto operativo municipal. La implementación de la ISO 50001 no es
+                solo burocracia, es rentabilidad.</p>
+
+            <h3 data-i18n="blog_art2_h3_1">Estrategias de Optimización</h3>
+            <p data-i18n="blog_art2_p2">El uso de variadores de frecuencia (VFD) en los sopladores de aireación puede
+                reducir el consumo
+                hasta un
+                25%. Ajustar el suministro de oxígeno a la demanda biológica real (DO control) es la medida más
+                impactante.</p>
+
+            <div class="tech-box" data-i18n="blog_art2_tech">
+                ROI PROMEDIO: La implementación de sistemas de control inteligente en aireación tiene un retorno de
+                inversión típico de 12 a 18 meses.
+            </div>
+        </article>
+
+        <!-- Article 3 -->
+        <article class="article">
+            <span class="article-meta" data-i18n="blog_art3_meta">Mecánica | Sep 15, 2024</span>
+            <h2 data-i18n="blog_art3_title">Tecnologías de Sellado para Alta Presión</h2>
+            <p data-i18n="blog_art3_p1">En aplicaciones industriales de más de 100 bar, los sellos mecánicos
+                convencionales fallan
+                prematuramente. La tecnología de sellos de gas seco y sellos de cartucho balanceados ofrece
+                soluciones
+                robustas.</p>
+            <p data-i18n="blog_art3_p2">Seleccionar la cara del sello correcta (Carburo de Silicio vs Carburo de
+                Tungsteno) es crítico
+                dependiendo de la abrasividad del fluido. Para aguas con sedimentos, se recomiendan sistemas de plan
+                de
+                lavado API 53 o similares.</p>
+        </article>
+
+    </div>
+
+    <footer>
+        &copy; 2025 SEMHYS.com - Academia de Ingeniería.
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
+```

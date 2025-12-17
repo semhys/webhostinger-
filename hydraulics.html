@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidráulica Avanzada - SEMHYS</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #004e92;
+            --color-secondary: #ff6b00;
+            --color-dark: #1a1a1a;
+            --color-light: #f4f4f4;
+            --color-white: #ffffff;
+            --font-main: 'Inter', sans-serif;
+            --font-tech: 'Roboto Mono', monospace;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--color-dark);
+            background-color: var(--color-light);
+            line-height: 1.8;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        /* Navigation */
+        .main-nav ul {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .main-nav a {
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .main-nav a:hover {
+            color: var(--color-primary);
+        }
+
+        /* Mobile Menu */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--color-dark);
+            transition: var(--transition);
+        }
+
+        @media (max-width: 768px) {
+            .main-nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                width: 70%;
+                background: white;
+                box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+                padding: 5rem 2rem;
+                transition: var(--transition);
+            }
+
+            .main-nav.active {
+                right: 0;
+            }
+
+            .main-nav ul {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+
+            .main-nav a {
+                font-size: 1.2rem;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .menu-toggle.active .bar:nth-child(1) {
+                transform: rotate(-45deg) translate(-5px, 6px);
+            }
+
+            .menu-toggle.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle.active .bar:nth-child(3) {
+                transform: rotate(45deg) translate(-5px, -6px);
+            }
+        }
+
+        /* Header */
+        header {
+            background: white;
+            width: 100%;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+        }
+
+        /* Page Content */
+        .page-header {
+            background: var(--color-primary);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .content-block {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .content-block h2 {
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .cta-box {
+            text-align: center;
+            margin-top: 3rem;
+            background: #eef;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: var(--color-secondary);
+            color: white;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        footer {
+            background: #111;
+            color: #888;
+            padding: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo"><img src="logo.png" alt="SEMHYS Logo"></a>
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="index.html" onclick="toggleMenu()" data-i18n="nav_home">Inicio</a></li>
+                    <li><a href="index.html#services" onclick="toggleMenu()" data-i18n="nav_services">Servicios</a></li>
+                    <li><a href="shop.html" data-i18n="nav_shop">Tienda</a></li>
+                    <li><a href="blog.html" data-i18n="nav_blog">Academia</a></li>
+                    <li>
+                        <div class="lang-selector">
+                            <select id="languageSelect" onchange="changeLanguage()">
+                                <option value="es">ES</option>
+                                <option value="en">EN</option>
+                                <option value="pt">PT</option>
+                                <option value="fr">FR</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-header">
+        <h1 data-i18n="hydr_title">Hidráulica Avanzada</h1>
+        <p data-i18n="hydr_desc">Soluciones integrales para sistemas de bombeo y fluidos.</p>
+    </div>
+
+    <div class="container">
+        <div class="content-block">
+            <h2 data-i18n="hydr_sec1_title">Diseño y Simulación</h2>
+            <p data-i18n="hydr_sec1_desc">Utilizamos software CAD y CFD de última generación para modelar el
+                comportamiento de fluidos. Esto nos
+                permite predecir problemas como la cavitación o el golpe de ariete antes de la instalación.</p>
+        </div>
+
+        <div class="content-block">
+            <h2 data-i18n="hydr_sec2_title">Mantenimiento Predictivo</h2>
+            <p data-i18n="hydr_sec2_desc">Nuestros servicios incluyen análisis de vibraciones y termografía para
+                detectar fallos inminentes en
+                rodamientos y sellos mecánicos, maximizando el tiempo de actividad.</p>
+        </div>
+
+        <div class="content-block">
+            <h2 data-i18n="hydr_sec3_title">Optimización de Bombeo</h2>
+            <p data-i18n="hydr_sec3_desc">Realizamos auditorías de eficiencia para asegurar que sus bombas operen en su
+                Punto de Mejor Eficiencia
+                (BEP), reduciendo drásticamente el consumo eléctrico.</p>
+        </div>
+
+        <div class="cta-box">
+            <h3 data-i18n="hydr_cta_title">¿Necesita asesoramiento experto?</h3>
+            <p data-i18n="hydr_cta_desc">Hable directamente con nuestros ingenieros especialistas.</p>
+            <a href="https://wa.me/18483322418?text=Consulta sobre Hidraulica" class="btn" target="_blank"
+                data-i18n="hydr_cta_btn">Contactar
+                Ingeniero</a>
+        </div>
+    </div>
+
+    <footer>&copy; 2025 SEMHYS.com</footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
