@@ -5,30 +5,30 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 
 # --- 1. CONFIGURACIÓN VISUAL (ESTÉTICA PRO) ---
-# Layout "wide" para ocupar todo el ancho y sidebar colapsado
+# CAMBIO CLAVE: layout="wide" usa toda la pantalla
 st.set_page_config(page_title="Semhys AI", layout="wide", initial_sidebar_state="collapsed")
 
-# Truco CSS para limpiar toda la basura visual de Streamlit
+# CAMBIO CLAVE: CSS para eliminar márgenes blancos gigantes
 st.markdown("""
     <style>
-    /* Ocultar menú de hamburguesa, header y footer */
+    /* Ocultar menú de hamburguesa y marca de agua */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Quitar espacios blancos gigantes (padding) del contenedor principal */
+    /* ELIMINAR ESPACIOS BLANCOS SOBRANTES */
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 0rem !important;
         padding-bottom: 0rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
     }
     
-    /* Estilo del chat para que se vea más limpio */
+    /* Estilo del chat más limpio */
     .stChatMessage {
         padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 0.5rem;
+        background-color: #ffffff;
+        border-bottom: 1px solid #f0f0f0;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -40,47 +40,40 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # --- 3. LÓGICA DE CHAT ---
-# Título simple y limpio (sin imágenes que se rompan)
 st.markdown("### 🤖 Asistente Técnico Semhys")
 
-# Mostrar mensajes anteriores
+# Mostrar mensajes
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# Captura de entrada del usuario
+# Captura de entrada
 if prompt := st.chat_input("Escribe tu consulta técnica aquí..."):
-    # Guardar y mostrar mensaje usuario
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Respuesta del Asistente
     with st.chat_message("assistant"):
-        with st.spinner("Analizando base de datos de ingeniería..."):
+        with st.spinner("Procesando..."):
             try:
-                # CONEXIÓN DB (Solo se activa si hay secretos, sino usa modo demo seguro)
+                # INTENTO DE CONEXIÓN A BASE DE DATOS
                 if "SUPABASE_URL" in st.secrets:
                     supabase = create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
                     embeddings = OpenAIEmbeddings(openai_api_key=st.secrets["OPENAI_API_KEY"])
                     vector_store = SupabaseVectorStore(client=supabase, embedding=embeddings, table_name="documents", query_name="match_documents")
                     
-                    # Búsqueda RAG (Retrieval Augmented Generation)
                     docs = vector_store.similarity_search(prompt, k=3)
                     contexto = "\n".join([d.page_content for d in docs])
                     
-                    sys_prompt = f"Eres un Ingeniero Experto de Semhys. Responde usando este contexto técnico:\n{contexto}"
+                    sys_prompt = f"Eres un Ingeniero Experto de Semhys. Responde técnicamente usando:\n{contexto}"
                     llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.3, openai_api_key=st.secrets["OPENAI_API_KEY"])
                     
                     response = llm.invoke([SystemMessage(content=sys_prompt), HumanMessage(content=prompt)])
                     full_response = response.content
                 else:
-                    # Modo seguro si fallan las llaves o conexión
-                    full_response = "Modo Demo: No puedo acceder a la base de datos completa ahora mismo, pero soy el Asistente virtual de Semhys. ¿En qué puedo ayudarte?"
+                    full_response = "Modo Demo: Configura las claves API en Streamlit para conectar la inteligencia real."
                 
                 st.markdown(full_response)
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
-            except Exception as e:
-                err_msg = "Lo siento, hubo un error temporal de conexión con el servidor de IA. Por favor intenta de nuevo."
-                st.error(err_msg)
-                st.session_state.messages.append({"role": "assistant", "content": err_msg})
+            except:
+                st.error("Error de conexión con el servidor IA.")
