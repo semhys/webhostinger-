@@ -1,32 +1,24 @@
-name: Deploy to Hostinger
-
+name: Despliegue a Hostinger
 on:
   push:
     branches:
       - main
-
 jobs:
   web-deploy:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: 🚚 Obtener el código más reciente
         uses: actions/checkout@v4
-      
-      - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 📂 Sincronizar archivos con Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Target specific Hostinger folder - Updated 2025-12-18 09:33:57
           server-dir: domains/semhys.com/public_html/
           exclude: |
             **/.git*
-            **/.git*/**
+            **/.github*
             **/node_modules/**
-            **/venv/**
-            **/.streamlit/**
-            **/__pycache__/**
-            SOLUCION_DB.sql
             README.md
