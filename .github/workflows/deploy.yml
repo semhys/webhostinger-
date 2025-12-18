@@ -1,25 +1,16 @@
-name: Despliegue a Hostinger
-on:
-  push:
-    branches:
-      - main
+name: Deploy Hostinger
+on: push
 jobs:
   web-deploy:
-    name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Obtener el código más reciente
-        uses: actions/checkout@v4
-      - name: 📂 Sincronizar archivos con Hostinger
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          # FIX: Explicit public_html folder
-          server-dir: public_html/
-          exclude: |
-            **/.git*
-            **/.github*
-            **/node_modules/**
-            README.md
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+
+    - name: 📂 Sync with Hostinger
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: public_html/
