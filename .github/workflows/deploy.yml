@@ -16,7 +16,8 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: domains/semhys.com/public_html/
+          # FIX: Simplified path to root to ensure visibility
+          server-dir: ./
           exclude: |
             **/.git*
             **/.github*
