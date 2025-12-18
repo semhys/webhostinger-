@@ -19,7 +19,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Target specific Hostinger folder
+          # Target specific Hostinger folder - Updated 2025-12-18 09:33:57
           server-dir: domains/semhys.com/public_html/
           exclude: |
             **/.git*
