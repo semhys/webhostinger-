@@ -16,7 +16,12 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Path configuration
-          server-dir: public_html/
-          # FORCE UPLOAD: Ignore state and overwrite everything
-          dangerous-clean-slate: true
+          # BACK TO ROBUST CONFIG: Root path (known working)
+          server-dir: ./
+          # SAFETY: Disable delete mode
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.github*
+            **/node_modules/**
+            README.md
