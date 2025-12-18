@@ -1,8 +1,8 @@
 name: Despliegue a Hostinger
+# DISABLE AUTOMATIC TRIGGER caused by FTP failures
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+
 jobs:
   web-deploy:
     name: 🎉 Deploy
@@ -16,9 +16,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # FIX: Reverting to the only path that connected successfully
           server-dir: public_html/
-          # SAFETY: Disabled clean-slate to prevent wiping
           dangerous-clean-slate: false
           exclude: |
             **/.git*
