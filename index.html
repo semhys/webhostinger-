@@ -4,85 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio - SEMHYS Ingeniería & IA</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* ESTILOS DE TU DISEÑO ORIGINAL */
-        :root {
-            --color-primary: #004e92;
-            --color-secondary: #ff6b00;
-            --color-dark: #1a1a1a;
-            --color-light: #f4f4f4;
-            --font-main: 'Inter', sans-serif;
-            --transition: all 0.3s ease;
-        }
-
+        :root { --primary: #004e92; --secondary: #ff6b00; --light: #f4f4f4; --font-main: 'Inter', sans-serif; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--font-main); color: var(--color-dark); background-color: var(--color-light); line-height: 1.8; display: flex; flex-direction: column; min-height: 100vh; }
-        a { text-decoration: none; color: inherit; transition: var(--transition); }
-
-        /* HEADER & NAV */
-        header { background: white; width: 100%; box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05); }
-        .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .logo img { height: 60px; width: auto; }
-        .main-nav ul { display: flex; gap: 2rem; align-items: center; list-style: none; }
-        .main-nav a { font-weight: 500; font-size: 0.95rem; }
-        .main-nav a:hover { color: var(--color-primary); }
-
-        /* CONTENEDOR DEL CHAT */
-        .hero-section {
-            background: linear-gradient(135deg, #004e92 0%, #000428 100%);
-            color: white; padding: 2rem; text-align: center;
-        }
-        .hero-section h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        body { font-family: var(--font-main); background-color: var(--light); display: flex; flex-direction: column; min-height: 100vh; }
         
-        .ai-container {
-            flex: 1; width: 100%; height: 80vh; 
-            background: white; border: none;
-        }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        footer { background: #111; color: #888; padding: 2rem; text-align: center; margin-top: auto; }
+        /* HEADER */
+        header { background: white; padding: 1rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 800; font-size: 1.5rem; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .logo img { height: 40px; } 
+        nav { display: flex; gap: 20px; }
+        nav a { text-decoration: none; color: #333; font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        nav a:hover { color: var(--primary); }
+        .btn-shop { color: var(--secondary) !important; }
         
         /* MÓVIL */
-        @media (max-width: 768px) { .main-nav { display: none; } }
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+        @media (max-width: 768px) { 
+            nav { display: none; } 
+            .menu-toggle { display: block; }
+            .logo img { height: 30px; }
+        }
+
+        /* HERO & CHAT */
+        .hero { background: linear-gradient(135deg, #004e92 0%, #000428 100%); color: white; padding: 2rem 1rem; text-align: center; }
+        .hero h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        
+        .chat-container { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; background: white; height: 75vh; }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
-
 <body>
 
     <header>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="logo.png" alt="SEMHYS" onerror="this.style.display='none'; document.querySelector('.logo-text').style.display='block'">
-                <span class="logo-text" style="display:none; font-weight:800; color:#004e92;">SEMHYS</span>
-            </a>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html"><b>Inicio</b></a></li>
-                    <li><a href="water.html">Tratamiento Agua</a></li>
-                    <li><a href="energy.html">Energía</a></li>
-                    <li><a href="hydraulics.html">Hidráulica</a></li>
-                    <li><a href="shop.html" style="color:var(--color-secondary);">Tienda</a></li>
-                </ul>
-            </nav>
-        </div>
+        <a href="index.html" class="logo">
+            <img src="logo.png" alt="Logo" onerror="this.style.display='none'"> 
+            SEMHYS
+        </a>
+        <div class="menu-toggle">☰</div>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="water.html">Tratamiento Agua</a>
+            <a href="energy.html">Energía</a>
+            <a href="hydraulics.html">Hidráulica</a>
+            <a href="shop.html" class="btn-shop">Tienda</a>
+            <a href="blog.html">Academia</a>
+        </nav>
     </header>
 
-    <section class="hero-section">
+    <div class="hero">
         <h1>Centro de Ingeniería & IA</h1>
-        <p>Asistente inteligente conectado a base de conocimiento técnico.</p>
-    </section>
-
-    <div class="ai-container">
-        <iframe src="https://tw6db9kd9k5bgwxdclommd.streamlit.app/?embed=true"></iframe>
+        <p>Asistente técnico inteligente conectado.</p>
     </div>
 
-    <footer>
-        &copy; 2025 SEMHYS.com - Soluciones de Ingeniería Sostenible.
-    </footer>
+    <div class="chat-container">
+        <iframe src="https://tw6db9kd9k5bgwxdclommd.streamlit.app/?embed=true"></iframe>
+    </div>
 
 </body>
 </html>
