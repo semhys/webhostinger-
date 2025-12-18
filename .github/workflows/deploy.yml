@@ -16,8 +16,8 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # CRITICAL FIX: Full path to domain public folder
-          server-dir: domains/semhys.com/public_html/
+          # FINAL FIX: Standard public_html path for main domain
+          server-dir: public_html/
           exclude: |
             **/.git*
             **/.github*
