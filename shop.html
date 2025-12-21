@@ -52,6 +52,9 @@
             background: white;
             width: 100%;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 0;
+            z-index: 1000;
         }
 
         .nav-container {
@@ -64,8 +67,12 @@
         }
 
         .logo img {
-            height: 60px;
+            height: 50px;
             width: auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: var(--transition);
         }
 
         .back-link {
@@ -265,9 +272,9 @@
             <nav class="main-nav" id="mainNav">
                 <ul>
                     <li><a href="index.html" onclick="toggleMenu()" data-i18n="nav_home">Inicio</a></li>
-                    <li><a href="index.html#services" onclick="toggleMenu()" data-i18n="nav_services">Servicios</a></li>
-                    <li><a href="shop.html" data-i18n="nav_shop">Tienda</a></li>
+                    <li><a href="services.html" onclick="toggleMenu()" data-i18n="nav_services">Servicios</a></li>
                     <li><a href="blog.html" data-i18n="nav_blog">Academia</a></li>
+                    <li><a href="shop.html" data-i18n="nav_shop">Tienda</a></li>
                     <li>
                         <div class="lang-selector">
                             <select id="languageSelect" onchange="changeLanguage()">
@@ -285,7 +292,7 @@
 
     <script src="script.js"></script>
 
-    <section class="section">
+    <section class="section" style="padding-top: 8rem;">
         <div class="container">
             <div class="section-title">
                 <h2>Catálogo Industrial</h2>
