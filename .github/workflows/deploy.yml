@@ -1,16 +1,17 @@
-name: Despliegue a Hostinger
-# DISABLE AUTOMATIC TRIGGER caused by FTP failures
+name: Deploy Hostinger
 on:
-  workflow_dispatch:
-
+  push:
+    branches:
+      - main
 jobs:
   web-deploy:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Obtener el código más reciente
+      - name: 🚚 Get latest code
         uses: actions/checkout@v4
-      - name: 📂 Sincronizar archivos con Hostinger
+
+      - name: 📂 Sync with Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -18,8 +19,3 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: public_html/
           dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.github*
-            **/node_modules/**
-            README.md
