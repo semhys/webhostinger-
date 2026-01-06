@@ -75,5 +75,6 @@ if prompt := st.chat_input("Escribe tu consulta técnica aquí..."):
                 
                 st.markdown(full_response)
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
-            except:
-                st.error("Error de conexión con el servidor IA.")
+            except Exception as e:
+                st.error(f"Error de conexión con el servidor IA: {str(e)}")
+                print(f"DEBUG ERROR: {e}")

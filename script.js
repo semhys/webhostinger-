@@ -426,7 +426,10 @@ function changeLanguage(forcedLang) {
 
 // 3. CHAT WIDGET LOGIC (Centralized)
 const chatConfig = {
-    aiName: "Ingeniero IA Semhys"
+    aiName: "Ingeniero IA Semhys",
+    // CAMBIAR ESTO POR TU URL DE CLOUD RUN DESPUÉS DEL DESPLIEGUE
+    // Ejemplo: "https://semhys-backend-xyz-uc.a.run.app"
+    backendUrl: "http://localhost:8080"
 };
 
 const aiResponses = {
@@ -550,7 +553,7 @@ function handleChatKey(e) {
     }
 }
 
-function sendMessage() {
+async function sendMessage() {
     const input = document.getElementById('chatInput');
     const msg = input.value.trim();
     if (!msg) return;
@@ -565,27 +568,42 @@ function sendMessage() {
     const messagesContainer = document.getElementById('chatMessages');
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // 3. Simulate AI Response
+    // 3. Real AI Call (Gemini)
     const currentLang = localStorage.getItem('semhys_lang') || 'es';
-    const responses = aiResponses[currentLang] || aiResponses.es;
 
-    setTimeout(() => {
+    // Convert current DOM messages to history (simple version)
+    const history = [];
+    // (Optional: Logic to scrape previous messages from DOM if needed for context)
+
+    try {
+        const response = await fetch(`${chatConfig.backendUrl}/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: msg,
+                history: history,
+                language: currentLang
+            })
+        });
+
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const data = await response.json();
+
         typing.style.display = 'none';
+        addMessage(data.response, 'ai');
 
-        // Simulación básica de respuesta
-        let response = responses.thinking; // Start with generic acknowledgment if logic complex
-
-        if (msg.toLowerCase().includes("bomba") || msg.toLowerCase().includes("pump") || msg.toLowerCase().includes("pompe")) {
-            response = responses.pump_issue;
-        } else if (msg.toLowerCase().includes("precio") || msg.toLowerCase().includes("price") || msg.toLowerCase().includes("prix") || msg.toLowerCase().includes("preço")) {
-            response = responses.price_query;
-        } else {
-            response = responses.default;
-        }
-
-        addMessage(response, 'ai');
-    }, 1500);
+    } catch (error) {
+        console.error("AI Error:", error);
+        typing.style.display = 'none';
+        // Fallback to default offline message
+        const responses = aiResponses[currentLang] || aiResponses.es;
+        addMessage(responses.default + " (Error de conexión: Verifica que el backend esté corriendo)", 'ai');
+    }
 }
+
 
 function addMessage(text, sender) {
     const container = document.getElementById('chatMessages');
