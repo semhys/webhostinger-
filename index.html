@@ -35,7 +35,8 @@
             color: var(--color-dark);
             background-color: var(--color-light);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            width: 100%;
         }
 
         a {
@@ -171,17 +172,20 @@
             .main-nav {
                 position: fixed;
                 top: 0;
-                right: -100%;
+                right: 0;
                 height: 100vh;
                 width: 70%;
                 background: white;
                 box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
                 padding: 5rem 2rem;
                 transition: var(--transition);
+                transform: translateX(100%); /* Hide via transform */
+                visibility: hidden; /* Ensure it doesn't take clicks */
             }
 
             .main-nav.active {
-                right: 0;
+                transform: translateX(0); /* Show via transform */
+                visibility: visible;
             }
 
             .main-nav ul {
