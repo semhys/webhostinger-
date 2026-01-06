@@ -427,9 +427,8 @@ function changeLanguage(forcedLang) {
 // 3. CHAT WIDGET LOGIC (Centralized)
 const chatConfig = {
     aiName: "Ingeniero IA Semhys",
-    // CAMBIAR ESTO POR TU URL DE CLOUD RUN DESPUÉS DEL DESPLIEGUE
-    // Ejemplo: "https://semhys-backend-xyz-uc.a.run.app"
-    backendUrl: "http://localhost:8080"
+    // Backend en Google Cloud Run
+    backendUrl: "https://semhys-chat-agent-934526683838.us-central1.run.app"
 };
 
 const aiResponses = {
