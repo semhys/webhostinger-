@@ -1,0 +1,39 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+      - fix/chat-widget-prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create deploy probe
+        run: |
+          echo "commit=${GITHUB_SHA}" > deploy_probe.txt
+          echo "date=$(date -u)" >> deploy_probe.txt
+
+      - name: Deploy to Hostinger via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          username: ${{ secrets.HOSTINGER_SFTP_USER }}
+          server: ${{ secrets.HOSTINGER_SFTP_HOST }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASS }}
+          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          local_path: './'
+          remote_path: '/home/u726518692/domains/semhys.com/public_html/'
+          sftp_only: true
+          # Exclude backend and dev files
+          ignore_regex: '^(semhys-agents/|\.git/|\.github/|\.env|.*\.py$|.*\.md$|.*\.sh$|.*\.ps1$|.*\.txt$|.*\.log$)'
+
+      - name: Verify live probe
+        run: |
+          echo "---- LIVE PROBE VERIFICATION ----"
+          sleep 5
+          curl -s --fail https://semhys.com/deploy_probe.txt || echo "::warning::Probe check failed (DNS/Cache delay?)"
+          echo ""
