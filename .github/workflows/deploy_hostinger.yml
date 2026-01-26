@@ -18,31 +18,36 @@ jobs:
           echo "commit=${GITHUB_SHA}" > deploy_probe.txt
           echo "date=$(date -u)" >> deploy_probe.txt
 
-      - name: Sync with Hostinger (SamKirkland)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.HOSTINGER_SFTP_HOST }}
-          username: ${{ secrets.HOSTINGER_SFTP_USER }}
-          password: ${{ secrets.HOSTINGER_SFTP_PASS }}
-          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
-          protocol: sftp
-          server-dir: domains/semhys.com/public_html/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            semhys-agents/**
-            .env
-            .venv/**
-            *.py
-            *.md
-            *.sh
-            *.ps1
-            *.log
+      - name: Install LFTP
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy via LFTP
+        env:
+          HOST: ${{ secrets.HOSTINGER_SFTP_HOST }}
+          USER: ${{ secrets.HOSTINGER_SFTP_USER }}
+          PASS: ${{ secrets.HOSTINGER_SFTP_PASS }}
+          PORT: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          REMOTE_DIR: domains/semhys.com/public_html/
+        run: |
+          echo "Starting LDTP Mirror to $REMOTE_DIR..."
+          lftp -c "open -u $USER,$PASS sftp://$HOST:$PORT; \
+          set sftp:auto-confirm yes; \
+          set ssl:verify-certificate no; \
+          mirror -R -v --parallel=2 \
+          --exclude-glob .git* \
+          --exclude-glob .github* \
+          --exclude-glob .env \
+          --exclude-glob semhys-agents/ \
+          --exclude-glob *.py \
+          --exclude-glob *.md \
+          --exclude-glob *.sh \
+          . $REMOTE_DIR; \
+          bye"
 
       - name: Verify live probe
+        if: success()
         run: |
           echo "---- LIVE PROBE VERIFICATION ----"
-          sleep 10
+          sleep 5
           curl -s --fail https://semhys.com/deploy_probe.txt || echo "::warning::Probe check failed (DNS/Cache delay?)"
           echo ""
