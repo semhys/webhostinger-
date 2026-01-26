@@ -22,9 +22,8 @@ jobs:
           server: ${{ secrets.HOSTINGER_SFTP_HOST }}
           username: ${{ secrets.HOSTINGER_SFTP_USER }}
           password: ${{ secrets.HOSTINGER_SFTP_PASS }}
-          protocol: sftp
-          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
-          server-dir: domains/semhys.com/public_html/
+          # DEBUG: Using absolute path to bypass home dir ambiguity
+          server-dir: /home/u726518692/domains/semhys.com/public_html/
           dangerous-clean-slate: false
           exclude: |
             **/.git*
@@ -41,5 +40,5 @@ jobs:
       - name: Verify live deploy
         run: |
           echo "===== LIVE CHECK ====="
-          sleep 5
-          curl -s https://semhys.com/deploy_probe.txt || true
+          sleep 10
+          curl -s --fail https://semhys.com/deploy_probe.txt || echo "::warning::Probe 404 - Check absolute path"
