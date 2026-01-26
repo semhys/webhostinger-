@@ -1,0 +1,45 @@
+name: Deploy Hostinger (semhys.com)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create deploy probe
+        run: |
+          echo "commit=${GITHUB_SHA}" > deploy_probe.txt
+          echo "date=$(date -u)" >> deploy_probe.txt
+
+      - name: Deploy to Hostinger (SFTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.HOSTINGER_SFTP_HOST }}
+          username: ${{ secrets.HOSTINGER_SFTP_USER }}
+          password: ${{ secrets.HOSTINGER_SFTP_PASS }}
+          protocol: sftp
+          port: ${{ secrets.HOSTINGER_SFTP_PORT }}
+          server-dir: domains/semhys.com/public_html/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            semhys-agents/**
+            .env
+            .venv/**
+            *.py
+            *.md
+            *.sh
+            *.ps1
+
+      - name: Verify live deploy
+        run: |
+          echo "===== LIVE CHECK ====="
+          sleep 5
+          curl -s https://semhys.com/deploy_probe.txt || true
