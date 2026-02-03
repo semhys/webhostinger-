@@ -21,7 +21,7 @@ COPY main.py .
 # COPY modules/ ./modules/
 
 # Puerto que escucha Cloud Run (por defecto 8080)
-PORT 8080
+ENV PORT=8080
 EXPOSE 8080
 
 # Comando de inicio usando Uvicorn
