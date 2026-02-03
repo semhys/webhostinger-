@@ -485,7 +485,12 @@ async function loadBlogPosts() {
 
         if (!response.ok) throw new Error('Error loading posts');
 
-        const posts = await response.json();
+        let posts = await response.json();
+
+        // Fix: If n8n returns a single object (dict), wrap it in an array
+        if (posts && !Array.isArray(posts)) {
+            posts = [posts];
+        }
 
         loader.style.display = 'none';
 
