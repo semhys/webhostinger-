@@ -427,8 +427,7 @@ function changeLanguage(forcedLang) {
 // 3. CHAT WIDGET LOGIC (Centralized)
 const chatConfig = {
     aiName: "Ingeniero IA Semhys",
-    // Backend en Google Cloud Run
-    backendUrl: "https://semhys-chat-agent-934526683838.us-central1.run.app"
+    backendUrl: window.location.origin
 };
 
 const aiResponses = {

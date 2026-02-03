@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  semhys-app:
+    container_name: semhys-app
+    build: .
+    restart: unless-stopped
+    environment:
+      - PORT=8080
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json
+      - PROJECT_ID=semhys-chat
+      - WEB_CONCURRENCY=2
+    volumes:
+      - ./gcp-key.json:/app/gcp-key.json:ro
+    ports:
+      # Exponer solo a localhost del host (para Proxy Manager instalado en host o tunnel SSH)
+      - "127.0.0.1:8081:8080"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
