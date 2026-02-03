@@ -448,192 +448,26 @@ const aiResponses = {
         pump_issue: "Je détecte un problème potentiel dans votre système de pompage. Pourriez-vous préciser si l'équipement présente des vibrations, un bruit excessif ou une chute de pression ?",
         price_query: "Pour des devis précis, j'ai besoin de connaître le modèle exact. Cependant, vous pouvez consulter notre section 'Boutique' pour des prix de référence.",
         default: "Merci pour votre demande. Un ingénieur spécialiste examinera votre cas et vous répondra sous peu."
-    },
-    pt: {
-        thinking: "Entendido. Estou analisando sua consulta técnica...",
-        pump_issue: "Detecto um problema potencial em seu sistema de bombeamento. Poderia especificar se o equipamento apresenta vibrações, ruído excessivo ou queda de pressão?",
-        price_query: "Para cotações precisas, preciso saber o modelo exato. No entanto, você pode consultar nossa seção 'Loja' para preços de referência.",
-        default: "Obrigado pela sua consulta. Um engenheiro especialista analisará seu caso e responderá em breve."
-    }
-};
-
-function injectChatWidget() {
-    // 1. Inject CSS
-    const style = document.createElement('style');
-    style.innerHTML = `
-        /* Chat Widget Styles */
-        .chat-widget { position: fixed; bottom: 30px; right: 30px; z-index: 9999; font-family: 'Inter', sans-serif; }
-        .chat-btn { width: 60px; height: 60px; border-radius: 50%; background: #ff6b00; color: white; border: none; box-shadow: 0 5px 20px rgba(255, 107, 0, 0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; transition: transform 0.3s ease; }
-        .chat-btn:hover { transform: scale(1.1); }
-        
-        .chat-window { position: absolute; bottom: 80px; right: 0; width: 350px; height: 500px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); overflow: hidden; display: none; flex-direction: column; border: 1px solid #eee; animation: fadeUp 0.3s ease; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .chat-header { background: #004e92; color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .chat-header span { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-        .chat-header .close-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; opacity: 0.8; }
-        .chat-header .close-btn:hover { opacity: 1; }
-
-        .chat-messages { flex: 1; padding: 1.5rem; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 1rem; }
-        
-        .message { max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        
-        .message.ai { align-self: flex-start; background: white; border: 1px solid #eee; border-bottom-left-radius: 2px; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .message.user { align-self: flex-end; background: #004e92; color: white; border-bottom-right-radius: 2px; box-shadow: 0 2px 5px rgba(0,78,146,0.2); }
-        
-        .chat-input-area { padding: 1rem; background: white; border-top: 1px solid #eee; display: flex; gap: 0.5rem; align-items: center; }
-        .chat-input-area input { flex: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 25px; outline: none; font-family: inherit; transition: border 0.3s; }
-        .chat-input-area input:focus { border-color: #004e92; }
-        .chat-input-area button { background: #004e92; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: background 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; }
-        .chat-input-area button:hover { background: #003d73; }
-        .chat-input-area button svg { width: 18px; height: 18px; fill: currentColor; margin-left: 2px; }
-
-        /* Typing Indicator */
-        .typing { align-self: flex-start; background: #eee; padding: 0.5rem 1rem; border-radius: 20px; display: flex; gap: 5px; align-items: center; display: none; margin-bottom: 1rem; }
-        .dot { width: 8px; height: 8px; background: #bbb; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-    `;
-    document.head.appendChild(style);
-
-    // 2. Inject HTML
-    const chatHTML = `
-        <div class="chat-widget" id="semhysChatWidget">
-            <div class="chat-window" id="chatWindow">
-                <div class="chat-header">
-                    <span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a1 1 0 1 1 1-1 1 1 0 0 1-1 1zm-3-6.5a3 3 0 1 1 6 0"></path></svg>
-                        ${chatConfig.aiName}
-                    </span>
-                    <button class="close-btn" onclick="toggleChat()">✕</button>
-                </div>
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message ai" data-i18n="chat_welcome_msg">
-                        <!-- Content injected by initLanguage() -->
-                    </div>
-                    <div class="typing" id="typingIndicator">
-                        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-                    </div>
-                </div>
-                <div class="chat-input-area">
-                    <input type="text" id="chatInput" placeholder="..." onkeypress="handleChatKey(event)">
-                    <button onclick="sendMessage()">
-                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
-                    </button>
-                </div>
-            </div>
-            <button class="chat-btn" onclick="toggleChat()">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-            </button>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', chatHTML);
-}
-
-// 4. CHAT FUNCTIONS
-function toggleChat() {
-    const chatWindow = document.getElementById('chatWindow');
-    if (chatWindow) {
-        if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
-            chatWindow.style.display = 'flex';
-            document.getElementById('chatInput').focus();
-        } else {
-            chatWindow.style.display = 'none';
-        }
-    }
-}
-
-function handleChatKey(e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-}
-
-async function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    // 1. Add User Message
-    addMessage(msg, 'user');
-    input.value = '';
-
-    // 2. Show Typing
-    const typing = document.getElementById('typingIndicator');
-    typing.style.display = 'flex';
-    const messagesContainer = document.getElementById('chatMessages');
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // 3. Real AI Call (Gemini)
-    const currentLang = localStorage.getItem('semhys_lang') || 'es';
-
-    // Convert current DOM messages to history (simple version)
-    const history = [];
-    // (Optional: Logic to scrape previous messages from DOM if needed for context)
-
-    try {
-        const response = await fetch(`${chatConfig.backendUrl}/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: msg,
-                history: history,
-                language: currentLang
-            })
-        });
-
-        if (!response.ok) throw new Error("Network response was not ok");
-
-        const data = await response.json();
-
-        typing.style.display = 'none';
-        addMessage(data.response, 'ai');
-
-    } catch (error) {
-        console.error("AI Error:", error);
-        typing.style.display = 'none';
-        // Fallback to default offline message
-        const responses = aiResponses[currentLang] || aiResponses.es;
-        addMessage(responses.default + " (Error de conexión: Verifica que el backend esté corriendo)", 'ai');
-    }
-}
-
-
-function addMessage(text, sender) {
-    const container = document.getElementById('chatMessages');
-    const typing = document.getElementById('typingIndicator');
-
-    const div = document.createElement('div');
-    div.classList.add('message', sender);
-    div.textContent = text;
-
-    // Insert before typing indicator
-    container.insertBefore(div, typing);
-    container.scrollTop = container.scrollHeight;
-}
+// --- CHAT WIDGET REMOVED FOR SECURITY ---
 
 // 5. SCROLL HEADER LOGIC
 window.addEventListener('scroll', () => {
-    const header = document.querySelector('header');
-    if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
-    }
-});
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
 
-// 3. UI LOGIC (Menu)
-function toggleMenu() {
-    const nav = document.getElementById('mainNav');
-    const toggle = document.querySelector('.menu-toggle');
-    if (nav && toggle) {
-        nav.classList.toggle('active');
-        toggle.classList.toggle('active');
-    }
+        // 3. UI LOGIC (Menu)
+        function toggleMenu() {
+            const nav = document.getElementById('mainNav');
+const toggle = document.querySelector('.menu-toggle');
+if (nav && toggle) {
+    nav.classList.toggle('active');
+    toggle.classList.toggle('active');
+}
 }
 
 // 4. BLOG LOGIC (n8n Integration)
