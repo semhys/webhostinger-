@@ -16,7 +16,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar el código fuente
-COPY main.py .
+# Copiar todo el código (frontend + backend)
+COPY . .
 # (Opcional) Copiar otros archivos si tu backend crece
 # COPY modules/ ./modules/
 
