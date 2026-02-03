@@ -261,76 +261,15 @@
 
     <div class="container">
 
-        <!-- Article 1 -->
-        <article class="article">
-            <span class="article-meta" data-i18n="blog_art1_meta">Hidráulica | Oct 12, 2024</span>
-            <h2 data-i18n="blog_art1_title">Cavitación en Bombas Centrífugas: El Enemigo Silencioso</h2>
-            <p data-i18n="blog_art1_p1">La cavitación es uno de los fenómenos más destructivos en los sistemas de bombeo
-                industrial. Ocurre
-                cuando la presión del fluido cae por debajo de su presión de vapor, formando burbujas que colapsan
-                violentamente al llegar a zonas de mayor presión.</p>
+        <!-- Estado de Carga -->
+        <div id="blog-loader" style="text-align: center; padding: 4rem;">
+            <p style="font-size: 1.2rem; color: #666;">Cargando artículos de la Academia...</p>
+        </div>
 
-            <h3 data-i18n="blog_art1_h3_1">Causas Principales</h3>
-            <p data-i18n="blog_art1_p2">Frecuentemente, la cavitación es causada por un NPSH (Net Positive Suction Head)
-                disponible
-                insuficiente.
-                Esto puede deberse a:</p>
-            <ul data-i18n="blog_art1_list">
-                <li>- Tuberías de succión obstruidas o mal dimensionadas.</li>
-                <li>- Alturas de succión excesivas.</li>
-                <li>- Fluido a temperatura demasiado alta.</li>
-            </ul>
-
-            <div class="tech-box" data-i18n="blog_art1_tech">
-                DIAGNÓSTICO TÉCNICO: Ruido similar a "bombear grava", vibración excesiva en los rodamientos y caída
-                repentina de la curva de presión-caudal.
-            </div>
-
-            <h3 data-i18n="blog_art1_h3_2">Soluciones de Ingeniería</h3>
-            <p data-i18n="blog_art1_p3">Para mitigar este problema, es crucial rediseñar la línea de succión para
-                minimizar pérdidas por
-                fricción, aumentar el nivel del tanque de succión o, en casos extremos, utilizar inductores en el
-                impulsor de la bomba.</p>
-        </article>
-
-        <!-- Article 2 -->
-        <article class="article">
-            <span class="article-meta" data-i18n="blog_art2_meta">Eficiencia Energética | Sep 28, 2024</span>
-            <h2 data-i18n="blog_art2_title">Normativa ISO 50001 en Plantas de Tratamiento</h2>
-            <p data-i18n="blog_art2_p1">Las plantas de tratamiento de aguas residuales (PTAR) son consumidores
-                intensivos de energía, a
-                menudo
-                representando el 30-40% del presupuesto operativo municipal. La implementación de la ISO 50001 no es
-                solo burocracia, es rentabilidad.</p>
-
-            <h3 data-i18n="blog_art2_h3_1">Estrategias de Optimización</h3>
-            <p data-i18n="blog_art2_p2">El uso de variadores de frecuencia (VFD) en los sopladores de aireación puede
-                reducir el consumo
-                hasta un
-                25%. Ajustar el suministro de oxígeno a la demanda biológica real (DO control) es la medida más
-                impactante.</p>
-
-            <div class="tech-box" data-i18n="blog_art2_tech">
-                ROI PROMEDIO: La implementación de sistemas de control inteligente en aireación tiene un retorno de
-                inversión típico de 12 a 18 meses.
-            </div>
-        </article>
-
-        <!-- Article 3 -->
-        <article class="article">
-            <span class="article-meta" data-i18n="blog_art3_meta">Mecánica | Sep 15, 2024</span>
-            <h2 data-i18n="blog_art3_title">Tecnologías de Sellado para Alta Presión</h2>
-            <p data-i18n="blog_art3_p1">En aplicaciones industriales de más de 100 bar, los sellos mecánicos
-                convencionales fallan
-                prematuramente. La tecnología de sellos de gas seco y sellos de cartucho balanceados ofrece
-                soluciones
-                robustas.</p>
-            <p data-i18n="blog_art3_p2">Seleccionar la cara del sello correcta (Carburo de Silicio vs Carburo de
-                Tungsteno) es crítico
-                dependiendo de la abrasividad del fluido. Para aguas con sedimentos, se recomiendan sistemas de plan
-                de
-                lavado API 53 o similares.</p>
-        </article>
+        <!-- Contenedor Dinámico -->
+        <div id="blog-grid">
+            <!-- Los artículos de n8n se inyectarán aquí -->
+        </div>
 
     </div>
 

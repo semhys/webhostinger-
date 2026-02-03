@@ -636,12 +636,56 @@ function toggleMenu() {
     }
 }
 
+// 4. BLOG LOGIC (n8n Integration)
+async function loadBlogPosts() {
+    const loader = document.getElementById('blog-loader');
+    const grid = document.getElementById('blog-grid');
+    if (!grid) return; // Not on blog page
+
+    try {
+        // Replace with your production n8n webhook URL
+        const response = await fetch('https://n8n.semhys.com/webhook/blog-posts');
+
+        if (!response.ok) throw new Error('Error loading posts');
+
+        const posts = await response.json();
+
+        loader.style.display = 'none';
+
+        if (posts.length === 0) {
+            grid.innerHTML = '<p style="text-align:center">No hay artículos disponibles por el momento.</p>';
+            return;
+        }
+
+        grid.innerHTML = posts.map(post => `
+            <article class="article">
+                <span class="article-meta">${post.category || 'General'} | ${post.date || ''}</span>
+                <h2>${post.title}</h2>
+                <p>${post.summary}</p>
+                <div class="tech-box">
+                    ${post.tech_note || ''}
+                </div>
+            </article>
+        `).join('');
+
+    } catch (error) {
+        console.error("Blog Error:", error);
+        loader.innerHTML = '<p style="color:red">Error al cargar noticias. Por favor intente más tarde.</p>';
+    }
+}
+
 // Initialize on Load
 window.addEventListener('DOMContentLoaded', () => {
     initLanguage();
-    // Chat Widget disabled by configuration
-    // injectChatWidget(); // Inject the new Chat UI
-    // Re-apply language after injection to ensure chat welcome msg is set
+
+    // START: Security Update - Chat Disabled
+    // injectChatWidget(); 
+    // END: Security Update
+
+    // Load Blog if on blog page
+    loadBlogPosts();
+
+    // Re-apply language after injection
     const savedLang = localStorage.getItem('semhys_lang');
     if (savedLang) changeLanguage(savedLang);
 });
