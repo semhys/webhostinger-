@@ -639,7 +639,8 @@ function toggleMenu() {
 // Initialize on Load
 window.addEventListener('DOMContentLoaded', () => {
     initLanguage();
-    injectChatWidget(); // Inject the new Chat UI
+    // Chat Widget disabled by configuration
+    // injectChatWidget(); // Inject the new Chat UI
     // Re-apply language after injection to ensure chat welcome msg is set
     const savedLang = localStorage.getItem('semhys_lang');
     if (savedLang) changeLanguage(savedLang);

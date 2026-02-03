@@ -140,33 +140,10 @@ async def root():
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
     try:
-        # 1. Recuperar Contexto (SIEMPRE INTENTAR)
-        context = search_data_store(request.message)
-        
-        # 2. Construir Respuesta
-        response_text = ""
-        
-        if ACTIVE_MODEL_NAME == "offline-mode":
-            # Si el modelo falla, devolvemos los DATOS directamente.
-            response_text = (
-                f"⚠️ **Modo Datos Directos**: El 'Cerebro' (Gemini) no responde (Error 404), "
-                f"pero tu **Memoria (Data Store)** funciona perfectamente.\n\n"
-                f"Esto es lo que encontré en tus documentos sobre tu consulta:\n\n{context}\n\n"
-                f"*(Nota: No puedo resumir esto sin Gemini, pero aquí tienes la evidencia cruda).*"
-            )
-        else:
-            # Si hay modelo, le damos el contexto para que responda bonito
-            full_prompt = (
-                f"Eres el Ingeniero de Semhys. Usa la siguiente información REAL de la base de datos para responder:\n"
-                f"--- CONTEXTO ---\n{context}\n----------------\n"
-                f"Pregunta del Usuario: {request.message}"
-            )
-            response = ACTIVE_MODEL.generate_content(full_prompt)
-            response_text = response.text
-
+        # --- CHAT DESHABILITADO POR PRIVACIDAD ---
         return ChatResponse(
-            response=response_text,
-            metadata={"model": ACTIVE_MODEL_NAME, "context_found": len(context) > 0}
+            response="El sistema de chat está temporalmente deshabilitado por mantenimiento.",
+            metadata={"status": "disabled"}
         )
 
     except Exception as e:
