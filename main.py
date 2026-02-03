@@ -11,9 +11,10 @@ from google.cloud import discoveryengine_v1 as discoveryengine
 from google.api_core.client_options import ClientOptions
 
 # --- CONFIGURACIÓN ---
-PROJECT_ID = "semhys-chat"
-LOCATION = "us-central1"
-DATA_STORE_ID = "semhys-investigacion" 
+# --- CONFIGURACIÓN ---
+PROJECT_ID = os.getenv("PROJECT_ID", "semhys-chat")
+LOCATION = os.getenv("LOCATION", "us-central1")
+DATA_STORE_ID = os.getenv("DATA_STORE_ID", "semhys-investigacion") 
 
 # Logging setup
 logging.basicConfig(level=logging.INFO)
