@@ -427,7 +427,7 @@ function changeLanguage(forcedLang) {
 // 3. CHAT WIDGET LOGIC (Centralized)
 const chatConfig = {
     aiName: "Ingeniero IA Semhys",
-    backendUrl: window.location.origin
+    backendUrl: "http://76.13.116.120:8082"
 };
 
 const aiResponses = {
@@ -451,7 +451,224 @@ const aiResponses = {
     }
 };
 
-// --- CHAT WIDGET REMOVED FOR SECURITY ---
+// 4. CHAT WIDGET LOGIC
+function injectChatWidget() {
+    const threadId = crypto.randomUUID(); // Unique session ID
+
+    // Create Widget HTML
+    const widget = document.createElement('div');
+    widget.id = 'semhys-chat-widget';
+    widget.innerHTML = `
+        <div id="chat-bubble" onclick="toggleChat()">
+            💬
+        </div>
+        <div id="chat-window" class="hidden">
+            <div class="chat-header">
+                <span>${chatConfig.aiName}</span>
+                <button onclick="toggleChat()">×</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai">
+                    ${aiResponses[document.documentElement.lang || 'es'].chat_welcome_msg}
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Escriba su consulta..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">➤</button>
+            </div>
+            <div class="chat-footer">
+                <a href="contact.html" class="human-link">${aiResponses[document.documentElement.lang || 'es'].chat_human_btn}</a>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(widget);
+
+    // Add Styles
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #semhys-chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: var(--font-main);
+        }
+        #chat-bubble {
+            width: 60px;
+            height: 60px;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        #chat-bubble:hover { transform: scale(1.1); }
+        #chat-window {
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        #chat-window.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+        .chat-header {
+            background: var(--color-primary);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+        .chat-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .message.ai {
+            background: white;
+            border: 1px solid #eee;
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        .message.user {
+            background: var(--color-secondary);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        .chat-input button {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .chat-footer {
+            padding: 10px;
+            text-align: center;
+            background: #f1f1f1;
+            font-size: 0.8rem;
+        }
+        .human-link {
+            color: var(--color-gray-dark);
+            text-decoration: underline;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Global scope functions for HTML events
+window.toggleChat = function () {
+    const win = document.getElementById('chat-window');
+    win.classList.toggle('hidden');
+};
+
+window.handleKeyPress = function (e) {
+    if (e.key === 'Enter') sendMessage();
+};
+
+window.sendMessage = async function () {
+    const input = document.getElementById('user-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    // Add User Message
+    addMessage(msg, 'user');
+    input.value = '';
+
+    // Show Thinking
+    const lang = document.documentElement.lang || 'es';
+    const thinkMsgId = addMessage(aiResponses[lang].thinking, 'ai');
+
+    try {
+        // CALL BACKEND API
+        const response = await fetch(`${chatConfig.backendUrl}/agent2/run`, { // Using Agent 2 (Privacy/RAG) as default chatter
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': 'your-secret-api-key' // TODO: Replace with env var or secure token
+            },
+            body: JSON.stringify({ topic: msg })
+        });
+
+        const data = await response.json();
+
+        // Remove Thinking
+        document.getElementById('chat-messages').lastElementChild.remove();
+
+        if (data.error) {
+            addMessage("Error: " + data.error, 'ai');
+        } else {
+            // Display RAG result (simplified)
+            addMessage(data.article ? data.article.full_text.substring(0, 500) + "..." : "Respuesta procesada.", 'ai');
+        }
+
+    } catch (e) {
+        console.error("Chat Error:", e);
+        // Remove Thinking
+        document.getElementById('chat-messages').lastElementChild.remove();
+        addMessage("Error de conexión. Intente más tarde.", 'ai');
+    }
+};
+
+function addMessage(text, type) {
+    const div = document.createElement('div');
+    div.className = `message ${type}`;
+    div.innerText = text;
+    document.getElementById('chat-messages').appendChild(div);
+    // Scroll to bottom
+    const container = document.getElementById('chat-messages');
+    container.scrollTop = container.scrollHeight;
+    return div;
+}
 
 // 5. SCROLL HEADER LOGIC
 window.addEventListener('scroll', () => {
@@ -520,8 +737,8 @@ async function loadBlogPosts() {
 window.addEventListener('DOMContentLoaded', () => {
     initLanguage();
 
-    // START: Security Update - Chat Disabled
-    // injectChatWidget(); 
+    // START: Security Update - Chat Enabled
+    injectChatWidget();
     // END: Security Update
 
     // Load Blog if on blog page
